@@ -144,9 +144,14 @@
                     </div>
                     <div class="flex flex-col justify-end">
                         <p class="text-sm text-purple-700 mb-4 bg-white/50 p-4 rounded-xl border border-purple-100">
-                            <strong>How it works:</strong> Gemini AI will analyze your ingredients and create a 20-month safe recipe.
+                            <strong>How it works:</strong> Gemini AI will analyze your ingredients, ensure they are toddler safe, and craft a recipe.
                         </p>
-                        <p id="api-key-error" class="text-red-600 text-sm font-bold mb-2 hidden">Please enter your API key!</p>
+                        
+                        <!-- NEW VALIDATION MESSAGE BOX -->
+                        <div id="form-error" class="hidden mb-4 bg-red-50 text-red-600 font-bold p-3 rounded-lg border border-red-200 text-sm">
+                            Please fill out all fields.
+                        </div>
+
                         <button id="btn-generate-recipe" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center group">
                             Generate Magic Recipe
                         </button>
@@ -154,23 +159,34 @@
                 </div>
             </div>
 
+            <!-- GLOBAL ERROR BOX IF THE API FAILS -->
+            <div id="ai-global-error" class="hidden mt-10 bg-red-50 rounded-2xl p-6 border border-red-200 text-center shadow-sm">
+                <p class="text-red-800 font-bold text-lg mb-2">Oops! The AI Chef hit a snag.</p>
+                <p class="text-red-600 font-medium font-mono text-sm bg-white p-3 rounded-lg border border-red-100 inline-block" id="ai-error-text">Details will appear here.</p>
+            </div>
+
+            <!-- GLOBAL LOADING SPINNER -->
             <div id="ai-global-loading" class="hidden mt-10 bg-white rounded-3xl p-10 border border-purple-100 shadow-sm text-center">
                 <svg class="animate-spin h-12 w-12 text-purple-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <h3 class="text-xl font-bold text-purple-900 mb-2">Cooking up an idea...</h3>
+                <p id="ai-loading-status" class="text-purple-600 font-medium text-sm mt-2">Checking available models...</p>
             </div>
 
+            <!-- THE GENERATED RECIPE OUTPUT -->
             <article id="generated-recipe-card" class="hidden mt-10 bg-white rounded-3xl shadow-lg border-2 border-purple-300 overflow-hidden relative">
                 <div class="absolute top-4 right-4 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
                     AI Generated
                 </div>
+                
                 <div class="relative w-full h-72 bg-gray-100 flex flex-col items-center justify-center border-b border-gray-200">
                     <img id="gen-recipe-image" class="w-full h-full object-cover hidden" alt="Generated Recipe Image" />
                     <div id="gen-image-loading" class="hidden flex-col items-center p-6 text-center">
                         <svg class="animate-spin h-10 w-10 text-purple-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <p class="text-purple-700 font-bold text-sm animate-pulse">Plating the dish (Generating Image)...</p>
+                        <p class="text-purple-700 font-bold text-sm animate-pulse" id="img-loading-text">Plating the dish (Generating Image)...</p>
                     </div>
                 </div>
+
                 <div class="p-6 md:p-10">
                     <h3 id="gen-recipe-title" class="text-3xl font-extrabold text-gray-900 mb-6">Recipe Title</h3>
                     <div class="grid md:grid-cols-3 gap-8">
@@ -207,9 +223,8 @@
             </div>
         </section>
 
-        <!-- ================= WEEK 1 RECIPES ================= -->
+        <!-- WEEK 1 RECIPES -->
         <div id="content-week-1" class="week-content block space-y-20">
-            
             <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">5</div><h2 class="text-3xl font-extrabold text-gray-800">Week 1 Recipes</h2></div>
 
             <!-- R1 -->
@@ -374,9 +389,8 @@
             </article>
         </div>
 
-        <!-- ================= WEEK 2 RECIPES ================= -->
+        <!-- WEEK 2 RECIPES -->
         <div id="content-week-2" class="week-content hidden space-y-20">
-            
             <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">6</div><h2 class="text-3xl font-extrabold text-gray-800">Week 2 Recipes</h2></div>
 
             <!-- R8 -->
@@ -565,14 +579,18 @@
 </main>
 
 <script>
-    const apiKey = ""; 
-
+    // Robust Fetch with built-in Error Parsing
     async function fetchWithRetry(url, options) {
         const delays = [1000, 2000, 4000, 8000, 16000];
         for (let i = 0; i < delays.length; i++) {
             try {
                 const response = await fetch(url, options);
-                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                if (!response.ok) {
+                    // Try to extract the exact error from Google's API
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMessage = errorData?.error?.message || `HTTP Error: ${response.status}`;
+                    throw new Error(errorMessage);
+                }
                 return await response.json();
             } catch (error) {
                 if (i === delays.length - 1) throw error;
@@ -581,7 +599,7 @@
         }
     }
 
-    // Mobile Navigation
+    // Mobile Navigation logic
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
@@ -607,35 +625,70 @@
     // AI Generation Logic
     const btnGenerate = document.getElementById('btn-generate-recipe');
     btnGenerate.addEventListener('click', async () => {
+        
+        // 1. Get User Inputs
         const ingredients = document.getElementById('ai-ingredients').value.trim();
         const mealType = document.getElementById('ai-meal-type').value;
         const userApiKey = document.getElementById('user-api-key').value.trim();
-        const finalApiKey = userApiKey || apiKey;
+        
+        // 2. Validate Inputs
+        const formError = document.getElementById('form-error');
+        formError.classList.add('hidden');
 
-        const errorMsg = document.getElementById('api-key-error');
-        errorMsg.classList.add('hidden');
-
-        if (!ingredients) return;
-        if (!finalApiKey) {
-            errorMsg.classList.remove('hidden');
+        if (!userApiKey || !ingredients) {
+            formError.textContent = !userApiKey ? "Error: Please paste your Gemini API Key!" : "Error: Please type in some ingredients!";
+            formError.classList.remove('hidden');
             return;
         }
 
+        // 3. Setup UI States
         const recipeCard = document.getElementById('generated-recipe-card');
         const globalLoading = document.getElementById('ai-global-loading');
+        const loadingStatusText = document.getElementById('ai-loading-status');
+        const globalError = document.getElementById('ai-global-error');
         const imgLoading = document.getElementById('gen-image-loading');
         const generatedImg = document.getElementById('gen-recipe-image');
         
         recipeCard.classList.add('hidden');
+        globalError.classList.add('hidden');
         globalLoading.classList.remove('hidden');
+        loadingStatusText.textContent = "Checking available AI models...";
+        
         imgLoading.classList.remove('hidden');
         imgLoading.classList.add('flex');
         generatedImg.classList.add('hidden');
+        
         btnGenerate.disabled = true;
+        btnGenerate.classList.add('opacity-50', 'cursor-not-allowed');
 
         try {
-            // Text Generation
-            const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${finalApiKey}`;
+            // --- STEP 1: Dynamically Fetch Available Models ---
+            // Because free API keys and different accounts have access to different models,
+            // we ask the API what we are allowed to use to prevent version mismatches.
+            let activeTextModel = "models/gemini-1.5-flash"; // safe fallback
+            let activeImageModel = "models/imagen-3.0-generate-001"; // safe fallback
+
+            try {
+                const modelsResponse = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models?key=${userApiKey}`, { method: 'GET' });
+                if (modelsResponse && modelsResponse.models) {
+                    const textModels = modelsResponse.models.filter(m => m.supportedGenerationMethods?.includes('generateContent') && m.name.includes('gemini'));
+                    const imgModels = modelsResponse.models.filter(m => m.name.includes('imagen'));
+                    
+                    // Prefer the fastest/newest standard models available to the user
+                    const preferredText = textModels.find(m => m.name.includes('gemini-1.5-flash')) || textModels.find(m => m.name.includes('gemini-2.5-flash')) || textModels[0];
+                    if (preferredText) activeTextModel = preferredText.name;
+
+                    const preferredImg = imgModels.find(m => m.name.includes('imagen-3.0')) || imgModels.find(m => m.name.includes('imagen-4.0')) || imgModels[0];
+                    if (preferredImg) activeImageModel = preferredImg.name;
+                }
+            } catch (e) {
+                console.warn("Failed to fetch models list, defaulting to standard 1.5-flash fallback.", e);
+            }
+
+            loadingStatusText.textContent = `Generating Recipe with ${activeTextModel.split('/')[1]}...`;
+
+            // --- STEP 2: Text Generation (The Recipe) ---
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${activeTextModel}:generateContent?key=${userApiKey}`;
             const textPayload = {
                 contents: [{ parts: [{ text: `Create a ${mealType} recipe using: ${ingredients}. Keep it safe for 20-month olds.` }] }],
                 systemInstruction: { parts: [{ text: "You are a toddler nutritionist. Create safe recipes." }] },
@@ -656,8 +709,11 @@
             };
 
             const textResult = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
+            
+            // Extract the generated JSON payload
             const recipeData = JSON.parse(textResult.candidates[0].content.parts[0].text);
 
+            // Populate Text HTML
             document.getElementById('gen-recipe-title').textContent = recipeData.title;
             document.getElementById('gen-recipe-tip').textContent = recipeData.toddler_tip;
             const ingUl = document.getElementById('gen-recipe-ingredients'); ingUl.innerHTML = '';
@@ -665,11 +721,14 @@
             const instOl = document.getElementById('gen-recipe-instructions'); instOl.innerHTML = '';
             recipeData.instructions.forEach((inst, i) => instOl.innerHTML += `<li><strong class="text-purple-600">${i + 1}.</strong> ${inst}</li>`);
 
+            // Show the recipe card, hide global loading
             globalLoading.classList.add('hidden');
             recipeCard.classList.remove('hidden');
 
-            // Image Generation
-            const imgUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${finalApiKey}`;
+            // --- STEP 3: Image Generation (The Photo) ---
+            document.getElementById('img-loading-text').textContent = `Plating with ${activeImageModel.split('/')[1]}...`;
+
+            const imgUrl = `https://generativelanguage.googleapis.com/v1beta/${activeImageModel}:predict?key=${userApiKey}`;
             const imgPayload = { instances: { prompt: recipeData.image_prompt }, parameters: { sampleCount: 1 } };
             
             const imgResult = await fetchWithRetry(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) });
@@ -680,18 +739,30 @@
                 imgLoading.classList.remove('flex');
                 generatedImg.classList.remove('hidden');
             } else {
-                throw new Error("No image generated");
+                throw new Error("API succeeded, but no image was returned.");
             }
 
-        } catch (e) {
-            console.error(e);
-            globalLoading.classList.add('hidden');
-            imgLoading.innerHTML = `<p class="text-red-600 font-bold text-sm">Image generation failed.</p>`;
+        } catch (error) {
+            console.error("Recipe Generation Error:", error);
+            
+            // If the recipe card hasn't shown yet (meaning Text Generation failed)
+            if (recipeCard.classList.contains('hidden')) {
+                globalLoading.classList.add('hidden');
+                globalError.classList.remove('hidden');
+                document.getElementById('ai-error-text').textContent = error.message;
+            } else {
+                // If the text worked, but the IMAGE failed
+                imgLoading.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200 text-center"><p class="text-red-800 font-bold text-sm">Image generation failed.</p><p class="text-red-600 text-xs mt-1 font-mono">${error.message}</p></div>`;
+            }
+
         } finally {
+            // Always turn the button back on
             btnGenerate.disabled = false;
+            btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
 
+    // Handle internal navigation linking
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
