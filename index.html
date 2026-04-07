@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Little Foodie Cookbook</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-body { font-family: 'Nunito', sans-serif; background-color: #fcfaf8; color: #334155; }
-input[type="checkbox"] { appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor; width: 1.25em; height: 1.25em; border: 2px solid #cbd5e1; border-radius: 0.25em; display: grid; place-content: center; cursor: pointer; transition: all 0.2s ease-in-out; }
-input[type="checkbox"]::before { content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em white; background-color: transform; transform-origin: bottom left; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
-input[type="checkbox"]:checked { background-color: #f97316; border-color: #f97316; }
-input[type="checkbox"]:checked::before { transform: scale(1); }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-@keyframes sparkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
-.animate-sparkle { animation: sparkle 2s infinite ease-in-out; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Little Foodie Cookbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; background-color: #fcfaf8; color: #334155; }
+        input[type="checkbox"] { appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor; width: 1.25em; height: 1.25em; border: 2px solid #cbd5e1; border-radius: 0.25em; display: grid; place-content: center; cursor: pointer; transition: all 0.2s ease-in-out; }
+        input[type="checkbox"]::before { content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em white; background-color: transparent; transform-origin: bottom left; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+        input[type="checkbox"]:checked { background-color: #f97316; border-color: #f97316; }
+        input[type="checkbox"]:checked::before { transform: scale(1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes sparkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+        .animate-sparkle { animation: sparkle 2s infinite ease-in-out; }
+    </style>
 </head>
-<body class="flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="flex flex-col md:flex-row h-[100dvh] overflow-hidden">
 
 <div class="md:hidden bg-white shadow-sm p-4 flex justify-between items-center z-50">
     <h1 class="font-extrabold text-xl text-orange-500">Little Foodie</h1>
@@ -80,8 +80,7 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
     </div>
 </nav>
 
-<main class="flex-1 overflow-y-auto h-full scroll-smooth relative" id="main-content">
-    
+<main class="flex-1 min-h-0 overflow-y-auto h-full scroll-smooth relative" id="main-content">
     <div class="bg-gradient-to-br from-orange-400 to-rose-400 text-white p-10 md:p-20 text-center">
         <h1 class="text-4xl md:text-6xl font-black mb-4">The Little Foodie</h1>
         <p class="text-xl md:text-2xl font-semibold opacity-90">20-Month Specific: Psychology & Survival</p>
@@ -112,73 +111,6 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <p class="text-gray-600 text-sm leading-relaxed">Food is one of the only things they have 100% control over. Refusing food is often just them flexing their new autonomy muscle.</p>
                 </div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800 mt-12 mb-6">Actionable Hacks</h3>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-orange-50 p-6 rounded-2xl">
-                    <h4 class="font-bold text-orange-700 mb-2">The A/B Choice</h4>
-                    <p class="text-orange-900 text-sm leading-relaxed">Give them a controlled choice: "Peas in the red or blue bowl?" They get power; you get them to eat.</p>
-                </div>
-                <div class="bg-orange-50 p-6 rounded-2xl">
-                    <h4 class="font-bold text-orange-700 mb-2">The "All Done" Bowl</h4>
-                    <p class="text-orange-900 text-sm leading-relaxed">Put an empty bowl next to their plate for foods they don't want. Gives them a safe action instead of throwing.</p>
-                </div>
-                <div class="bg-orange-50 p-6 rounded-2xl">
-                    <h4 class="font-bold text-orange-700 mb-2">Monkey See, Monkey Do</h4>
-                    <p class="text-orange-900 text-sm leading-relaxed">Sit down and eat exaggeratedly. When they see you happily eating, their instinct is to copy you.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- PRESENTATION SECTION -->
-        <section id="presentation" class="scroll-mt-10">
-            <div class="flex items-center mb-8">
-                <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">2</div>
-                <h2 class="text-3xl font-extrabold text-gray-800">Presentation Tricks</h2>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="border-2 border-amber-100 bg-white p-6 rounded-2xl">
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">The "Snackcuterie"</h3>
-                    <p class="text-gray-600 text-sm">Serve dinner in a cold muffin tin! The novelty of compartments makes food instantly fun.</p>
-                </div>
-                <div class="border-2 border-amber-100 bg-white p-6 rounded-2xl">
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">The "Dip" Trick</h3>
-                    <p class="text-gray-600 text-sm">Toddlers crave interactivity. Giving them a dip (Greek yogurt) gives them a "job" to do.</p>
-                </div>
-                <div class="border-2 border-amber-100 bg-white p-6 rounded-2xl">
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">Micro-Portions</h3>
-                    <p class="text-gray-600 text-sm">A full plate looks like a chore. Serve one single bite at a time, then offer "More?!"</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SWAPS SECTION -->
-        <section id="swaps" class="scroll-mt-10">
-            <div class="flex items-center mb-8">
-                <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">3</div>
-                <h2 class="text-3xl font-extrabold text-gray-800">Emergency Swaps</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-gray-800 text-white p-5 rounded-2xl">
-                    <span class="text-xs font-bold text-red-400 uppercase tracking-wider block mb-1">Out of Eggs?</span>
-                    <h3 class="font-bold text-lg mb-2">The Flax Egg</h3>
-                    <p class="text-gray-300 text-sm">Mix 1 tbsp ground flax with 3 tbsp warm water. Let sit 5 mins. Use as 1:1 replacement.</p>
-                </div>
-                <div class="bg-gray-800 text-white p-5 rounded-2xl">
-                    <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider block mb-1">Out of Breadcrumbs?</span>
-                    <h3 class="font-bold text-lg mb-2">The Oat Swap</h3>
-                    <p class="text-gray-300 text-sm">Pulse rolled oats in a blender until coarse. Use exactly as breadcrumbs.</p>
-                </div>
-                <div class="bg-gray-800 text-white p-5 rounded-2xl">
-                    <span class="text-xs font-bold text-green-400 uppercase tracking-wider block mb-1">Out of Flour?</span>
-                    <h3 class="font-bold text-lg mb-2">The Veggie Binder</h3>
-                    <p class="text-gray-300 text-sm">Substitute with mashed potato in fritters. Acts as a nutrient-dense glue.</p>
-                </div>
-                <div class="bg-gray-800 text-white p-5 rounded-2xl">
-                    <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block mb-1">Out of Milk?</span>
-                    <h3 class="font-bold text-lg mb-2">The Broth Trick</h3>
-                    <p class="text-gray-300 text-sm">If a recipe calls for milk for moisture, substitute unsalted chicken/veg broth.</p>
-                </div>
-            </div>
         </section>
 
         <!-- AI RECIPE GENERATOR SECTION -->
@@ -191,13 +123,15 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                 </div>
             </div>
 
-            <!-- Input Form -->
             <div class="bg-purple-50 rounded-3xl p-6 md:p-10 border border-purple-200 shadow-sm relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-4 opacity-10">
                     <svg class="w-32 h-32 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
                 </div>
                 <div class="relative z-10 grid md:grid-cols-2 gap-8">
                     <div>
+                        <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Gemini API Key</label>
+                        <input type="password" id="user-api-key" class="w-full rounded-xl border-2 border-purple-200 p-3 mb-4 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700" placeholder="Paste your API key here">
+
                         <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Ingredients on Hand</label>
                         <textarea id="ai-ingredients" rows="4" class="w-full rounded-xl border-2 border-purple-200 p-4 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all resize-none text-gray-700" placeholder="e.g., half a sweet potato, leftover pasta, frozen peas, cheddar cheese..."></textarea>
                         
@@ -210,36 +144,21 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     </div>
                     <div class="flex flex-col justify-end">
                         <p class="text-sm text-purple-700 mb-4 bg-white/50 p-4 rounded-xl border border-purple-100">
-                            <strong>How it works:</strong> Gemini AI will analyze your ingredients, verify they are safe for a 20-month-old, and create a recipe. Imagen AI will then generate a photo of the finished dish!
+                            <strong>How it works:</strong> Gemini AI will analyze your ingredients and create a 20-month safe recipe.
                         </p>
+                        <p id="api-key-error" class="text-red-600 text-sm font-bold mb-2 hidden">Please enter your API key!</p>
                         <button id="btn-generate-recipe" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center group">
-                            <svg class="w-6 h-6 mr-2 group-hover:animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                             Generate Magic Recipe
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Form Validation Error State -->
-            <div id="ai-validation-error" class="hidden mt-4 bg-red-50 rounded-xl p-4 border border-red-200 text-center animate-pulse">
-                <p class="text-red-600 font-bold text-sm" id="ai-validation-text">Please enter some ingredients!</p>
-            </div>
-
-            <!-- Global Loading State -->
             <div id="ai-global-loading" class="hidden mt-10 bg-white rounded-3xl p-10 border border-purple-100 shadow-sm text-center">
                 <svg class="animate-spin h-12 w-12 text-purple-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <h3 class="text-xl font-bold text-purple-900 mb-2">Cooking up an idea...</h3>
-                <p id="ai-loading-status" class="text-purple-600 font-medium">Consulting the toddler chef (Text AI)...</p>
-                <p id="ai-loading-details" class="text-purple-400 text-sm mt-2"></p>
             </div>
 
-            <!-- API Error State -->
-            <div id="ai-global-error" class="hidden mt-10 bg-red-50 rounded-2xl p-6 border border-red-200 text-center">
-                <p class="text-red-800 font-bold text-lg mb-2">Oops! We hit a snag.</p>
-                <p class="text-red-600 font-medium font-mono text-sm bg-white p-3 rounded-lg border border-red-100 inline-block" id="ai-error-text">Details will appear here.</p>
-            </div>
-
-            <!-- Generated Recipe Output -->
             <article id="generated-recipe-card" class="hidden mt-10 bg-white rounded-3xl shadow-lg border-2 border-purple-300 overflow-hidden relative">
                 <div class="absolute top-4 right-4 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
@@ -247,10 +166,9 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                 </div>
                 <div class="relative w-full h-72 bg-gray-100 flex flex-col items-center justify-center border-b border-gray-200">
                     <img id="gen-recipe-image" class="w-full h-full object-cover hidden" alt="Generated Recipe Image" />
-                    <div id="gen-image-loading" class="flex flex-col items-center p-6 text-center">
+                    <div id="gen-image-loading" class="hidden flex-col items-center p-6 text-center">
                         <svg class="animate-spin h-10 w-10 text-purple-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         <p class="text-purple-700 font-bold text-sm animate-pulse">Plating the dish (Generating Image)...</p>
-                        <p id="gen-image-details" class="text-purple-400 text-xs mt-1"></p>
                     </div>
                 </div>
                 <div class="p-6 md:p-10">
@@ -289,33 +207,9 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
             </div>
         </section>
 
-        <!-- ================= WEEK 1 WRAPPER ================= -->
+        <!-- ================= WEEK 1 RECIPES ================= -->
         <div id="content-week-1" class="week-content block space-y-20">
             
-            <section class="scroll-mt-10 bg-teal-50 rounded-3xl p-6 md:p-10">
-                <h3 class="text-2xl font-extrabold text-teal-900 mb-6 border-b-2 border-teal-200 pb-2">Week 1 Groceries & Schedule</h3>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-white p-6 rounded-xl border border-teal-100 shadow-sm mb-10">
-                    <div><h4 class="font-bold text-teal-800 mb-3 text-sm uppercase">Produce</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Zucchini (2 med)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Sweet Potatoes (600g)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Carrots (2 med)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Fresh Spinach</span></li></ul></div>
-                    <div><h4 class="font-bold text-teal-800 mb-3 text-sm uppercase">Meat & Fish</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Ground Meat (500g)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Salmon (300g)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Chicken Thighs</span></li></ul></div>
-                    <div><h4 class="font-bold text-teal-800 mb-3 text-sm uppercase">Dairy</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Large Eggs</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Cheese Block</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Greek Yogurt</span></li></ul></div>
-                    <div><h4 class="font-bold text-teal-800 mb-3 text-sm uppercase">Pantry</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Breadcrumbs</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Canned Beans</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Coconut Milk</span></li></ul></div>
-                </div>
-                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-teal-100">
-                    <table class="min-w-full text-left text-sm whitespace-nowrap">
-                        <thead class="uppercase tracking-wider border-b border-teal-100 bg-teal-50 text-teal-800 font-bold"><tr><th class="px-6 py-4">Day</th><th class="px-6 py-4">Main Dish</th><th class="px-6 py-4">20-Month Goal</th></tr></thead>
-                        <tbody class="text-teal-900 font-medium divide-y divide-teal-50">
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Mon</td><td class="px-6 py-4">Meatballs</td><td class="px-6 py-4 text-gray-500">Micro-Portions</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Tue</td><td class="px-6 py-4">Salmon Fingers</td><td class="px-6 py-4 text-gray-500">Yogurt Dip</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Wed</td><td class="px-6 py-4">Bean Quesadilla</td><td class="px-6 py-4 text-gray-500">Nutritional Synergy</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Thu</td><td class="px-6 py-4">Lentil Sweet Potato Cups</td><td class="px-6 py-4 text-gray-500">Fork Practice</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Fri</td><td class="px-6 py-4">Chicken Fritters</td><td class="px-6 py-4 text-gray-500">The "All Done" Bowl</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Sat</td><td class="px-6 py-4">Homemade Pizza Strips</td><td class="px-6 py-4 text-gray-500">A/B Choice</td></tr>
-                            <tr class="hover:bg-teal-50/50"><td class="px-6 py-4 font-bold text-teal-600">Sun</td><td class="px-6 py-4">Coconut Curry</td><td class="px-6 py-4 text-gray-500">Spoon Practice</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
             <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">5</div><h2 class="text-3xl font-extrabold text-gray-800">Week 1 Recipes</h2></div>
 
             <!-- R1 -->
@@ -326,11 +220,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground turkey or lean beef</li><li>• 1 Large egg (lightly beaten)</li><li>• 50g Panko or regular breadcrumbs</li><li>• 120g Zucchini (finely grated and squeezed dry)</li><li>• 1 tsp Onion powder & 1/2 tsp Garlic powder</li><li>• Pinch of black pepper</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground meat</li><li>• 1 Large egg</li><li>• 50g Breadcrumbs</li><li>• 120g Zucchini (dry)</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Prep Veggies:</strong> Finely grate the zucchini. Place it in a clean kitchen towel and wring out as much moisture as humanly possible to prevent soggy meatballs.</li><li><strong class="text-rose-500">2. Mix:</strong> In a large bowl, combine the ground meat, beaten egg, dry zucchini, breadcrumbs, and spices. Mix gently with your hands just until combined.</li><li><strong class="text-rose-500">3. Shape:</strong> Scoop about 1 tablespoon of the mixture and gently roll it into 3cm balls. Place them on a parchment-lined baking sheet.</li><li><strong class="text-rose-500">4. Bake:</strong> Bake in a preheated oven at 190°C (375°F) for 18-20 minutes, or until cooked through and slightly golden on the outside. Let cool before serving.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Prepare Zucchini:</strong> Grate the zucchini finely. Place it in a clean kitchen towel and wring it out with as much force as possible. It must be bone-dry to prevent the meatballs from becoming mushy.</li>
+                                <li><strong class="text-rose-500">2. Combine Ingredients:</strong> In a large mixing bowl, combine the ground meat, egg, breadcrumbs, and the dried zucchini. Use your hands to gently mix until just combined—do not overwork the meat or it will become tough for little jaws.</li>
+                                <li><strong class="text-rose-500">3. Portion & Roll:</strong> Scoop approximately 1 tablespoon of mixture and roll into 3cm balls. This size is perfect for "micro-portions" and easy for a toddler to pick up.</li>
+                                <li><strong class="text-rose-500">4. Bake:</strong> Arrange on a parchment-lined tray. Bake at 190°C (375°F) for 18-20 minutes. Ensure the internal temperature reaches 74°C (165°F).</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -344,11 +243,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 300g Skinless salmon fillet (bones removed)</li><li>• 1 Large egg (beaten)</li><li>• 30g All-purpose flour</li><li>• 50g Panko breadcrumbs</li><li>• 1/2 tsp Paprika</li><li>• Olive oil spray</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 300g Salmon Fillet</li><li>• 1 Egg</li><li>• 30g Flour</li><li>• 60g Panko Breadcrumbs</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Prep Salmon:</strong> Carefully check the salmon for any pin bones. Cut the fillet into toddler-friendly strips, about 2cm wide and 6cm long.</li><li><strong class="text-rose-500">2. Setup Station:</strong> Prepare three shallow bowls: one with flour, one with the beaten egg, and one with panko mixed with paprika.</li><li><strong class="text-rose-500">3. Dredge:</strong> Coat each salmon strip lightly in flour, dip it into the egg (letting excess drip off), and finally press it firmly into the panko mixture until fully coated.</li><li><strong class="text-rose-500">4. Bake:</strong> Place the strips on a greased baking tray, spray lightly with olive oil, and bake at 200°C (400°F) for 12-15 minutes until the fish flakes easily and the crust is golden.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Slice the Salmon:</strong> Remove any skin and carefully feel for bones. Slice the salmon into fingers roughly 2cm wide and 6cm long. This "finger" shape is easiest for a 20-month-old's palmar grasp.</li>
+                                <li><strong class="text-rose-500">2. Set Up Station:</strong> Prepare three shallow bowls: one with flour, one with the beaten egg, and one with panko.</li>
+                                <li><strong class="text-rose-500">3. Bread the Fish:</strong> Dip each piece into flour (shake off excess), then egg, then roll in panko until fully coated. Press the panko in firmly so it stays crunchy.</li>
+                                <li><strong class="text-rose-500">4. Bake:</strong> Place on a baking sheet and lightly spray with olive oil. Bake at 200°C (400°F) for 12-15 minutes until the salmon flakes easily and the coating is golden.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -362,11 +266,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Whole wheat or flour tortilla (8-inch)</li><li>• 50g Canned black beans (rinsed and drained well)</li><li>• 30g Shredded mild cheddar or Monterey Jack cheese</li><li>• 1 tsp Olive oil or butter</li><li>• Optional: 1 tbsp mild salsa or sweetcorn</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Flour Tortilla</li><li>• 50g Canned Black beans (rinsed)</li><li>• 30g Mild Cheddar</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Mash Beans:</strong> In a small bowl, use a fork to thoroughly mash the black beans until they form a thick, spreadable paste. This prevents choking hazards and helps the quesadilla stick together.</li><li><strong class="text-rose-500">2. Assemble:</strong> Spread the mashed black beans evenly over one half of the tortilla. Top with the shredded cheese and optional sweetcorn, then fold the empty half over the top.</li><li><strong class="text-rose-500">3. Cook:</strong> Heat the olive oil or butter in a skillet over medium-low heat. Place the folded quesadilla in the pan.</li><li><strong class="text-rose-500">4. Toast:</strong> Cook for 2-3 minutes until the bottom is golden brown and crispy. Carefully flip and cook the other side for another 2 minutes until the cheese is completely melted. Cut into small triangles or strips.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Safety Smash:</strong> Whole beans can be a choking hazard. Place rinsed beans on a plate and smash them flat with the back of a fork. This also helps them stick inside the tortilla!</li>
+                                <li><strong class="text-rose-500">2. Layering:</strong> Spread the smashed beans over half of the tortilla. Sprinkle the cheese evenly over the beans. Fold the tortilla in half.</li>
+                                <li><strong class="text-rose-500">3. Toasting:</strong> Heat a non-stick skillet over medium-low heat. Toast the quesadilla for 2 minutes per side until the cheese is melted and acts as a "glue" for the beans.</li>
+                                <li><strong class="text-rose-500">4. Slice:</strong> Let it cool for 3 minutes (molten cheese is a burn risk). Slice into thin triangles or strips.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -380,11 +289,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Cooked brown or green lentils (canned is fine, rinsed)</li><li>• 100g Finely diced onion and carrots</li><li>• 400g Sweet potatoes (peeled and cubed)</li><li>• 50ml Low-sodium vegetable broth</li><li>• 1 tbsp Olive oil</li><li>• Pinch of dried thyme</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Cooked lentils</li><li>• 100g Onion/Carrot (minced)</li><li>• 400g Sweet Potato (boiled)</li><li>• 50ml Vegetable Broth</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Mash Potato:</strong> Boil the sweet potato cubes until very tender (about 15 mins). Drain well and mash smoothly. Set aside to cool slightly.</li><li><strong class="text-rose-500">2. Sauté Veggies:</strong> Heat olive oil in a pan over medium heat. Add the finely diced onions and carrots, cooking for 5-7 minutes until completely soft and translucent.</li><li><strong class="text-rose-500">3. Simmer Base:</strong> Stir the cooked lentils, vegetable broth, and thyme into the veggie mixture. Simmer on low heat for 3-5 minutes until most of the liquid has absorbed or evaporated.</li><li><strong class="text-rose-500">4. Assemble:</strong> Grease a muffin tin. Spoon the lentil mixture into each cup, filling them about 2/3 full. Top each with a generous dollop of the sweet potato mash, smoothing it to the edges.</li><li><strong class="text-rose-500">5. Bake:</strong> Bake at 180°C (350°F) for 15-20 minutes until the edges are slightly firm. Let them cool in the tin for 10 minutes so they hold their shape before removing.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Sauté the Base:</strong> In a pan with a splash of oil, cook the finely minced onions and carrots until very soft (about 8 minutes). Texture is key—crunchy onions are often rejected at this age.</li>
+                                <li><strong class="text-rose-500">2. Combine & Simmer:</strong> Stir in the cooked lentils and broth. Simmer on low heat until the liquid is mostly gone and the mixture is thick and scoopable.</li>
+                                <li><strong class="text-rose-500">3. Prepare the Mash:</strong> Mash the boiled sweet potatoes until completely smooth. Add a tiny bit of butter or olive oil if needed for a silky texture.</li>
+                                <li><strong class="text-rose-500">4. Assemble & Bake:</strong> Grease a muffin tin. Fill each cup 2/3 with the lentil mixture. Spoon the sweet potato mash on top. Bake at 180°C (350°F) for 15 minutes to set. These are great for practicing with a fork!</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -398,17 +312,22 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 150g Cooked and finely shredded chicken breast</li><li>• 120g Zucchini (grated and moisture squeezed out)</li><li>• 1 Large egg</li><li>• 40g All-purpose flour or oat flour</li><li>• 20g Grated parmesan cheese</li><li>• 1 tbsp Olive oil for frying</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 150g Shredded chicken</li><li>• 120g Zucchini (dry)</li><li>• 1 Large egg</li><li>• 40g Flour</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Prep Ingredients:</strong> Ensure the shredded chicken is chopped very fine to avoid stringy textures. Grate the zucchini and wring it out tightly in a towel to remove excess water.</li><li><strong class="text-rose-500">2. Create Batter:</strong> In a medium bowl, whisk the egg. Add the dry zucchini, finely chopped chicken, and parmesan cheese. Mix well. Gently fold in the flour until just combined into a thick batter. Let it rest for 2-3 minutes.</li><li><strong class="text-rose-500">3. Portion:</strong> Heat olive oil in a large non-stick skillet over medium heat. Drop heaped tablespoons of the mixture into the pan, using the back of the spoon to flatten them into 1cm thick patties.</li><li><strong class="text-rose-500">4. Pan-Fry:</strong> Cook for 3-4 minutes on the first side until golden brown and crispy. Carefully flip and cook for another 3 minutes on the other side. Transfer to a paper towel-lined plate to drain excess oil.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Prep the Chicken:</strong> Ensure the chicken is finely shredded or chopped into tiny bits. Long strands can be hard for toddlers to manage.</li>
+                                <li><strong class="text-rose-500">2. Create the Batter:</strong> In a bowl, whisk the egg. Add the shredded chicken, bone-dry zucchini, and flour. Mix until you have a thick, sticky batter. Let it sit for 2 minutes to allow the flour to hydrate.</li>
+                                <li><strong class="text-rose-500">3. Pan-Fry:</strong> Heat a lightly oiled skillet over medium heat. Drop heaping tablespoons of batter into the pan and flatten them into discs with a spatula.</li>
+                                <li><strong class="text-rose-500">4. Cook:</strong> Fry for 3-4 minutes per side until golden brown and cooked through. Serve with a dollop of Greek yogurt as a "dip" to encourage interaction.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
             </article>
 
-            <!-- R6 (Updated to static image) -->
+            <!-- R6 -->
             <article id="recipe-6" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
                 <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" alt="Homemade Pizza Strips" class="w-full h-64 object-cover object-center bg-gray-100">
                 <div class="p-6 md:p-10">
@@ -416,11 +335,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 2 Whole wheat pita breads or mini naan breads</li><li>• 3-4 tbsp Low-sodium pizza or pasta sauce</li><li>• 50g Low-moisture mozzarella cheese (shredded)</li><li>• 1 tsp Italian seasoning</li><li>• Optional: finely chopped bell peppers or spinach</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 2 Whole-wheat Pitas</li><li>• 4 tbsp Low-sodium sauce</li><li>• 50g Mozzarella</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Prep Bases:</strong> Place the pita breads flat on a baking sheet lined with parchment paper. If they have a pocket, do not split them; use them whole for a sturdier base.</li><li><strong class="text-rose-500">2. Add Toppings:</strong> Spread 1.5 to 2 tablespoons of pizza sauce evenly over each pita, going almost to the edges. Sprinkle the Italian seasoning over the sauce, followed by an even layer of shredded mozzarella. Add any optional, finely chopped veggies on top.</li><li><strong class="text-rose-500">3. Bake:</strong> Place in a preheated oven at 200°C (400°F) and bake for 8-10 minutes. The edges of the pita should be crispy and the cheese should be melted and lightly bubbling.</li><li><strong class="text-rose-500">4. Serve:</strong> Remove from the oven and let cool for 3-5 minutes to prevent mouth burns. Use a pizza cutter or sharp knife to slice the circular pizzas into long, rectangular strips (about 2cm wide) which are much easier for 20-month-old hands to grip than wide wedges.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Base Prep:</strong> Using pita bread instead of dough makes for a thinner, easier-to-chew crust. Spread a thin layer of sauce on the pita, leaving a small border for the "crust."</li>
+                                <li><strong class="text-rose-500">2. Cheese & Veggie:</strong> Sprinkle mozzarella evenly. If you have extra finely grated carrots or spinach, you can hide them under the cheese here.</li>
+                                <li><strong class="text-rose-500">3. Bake:</strong> Bake at 200°C (400°F) for 8-10 minutes until the cheese is bubbling and just starting to brown.</li>
+                                <li><strong class="text-rose-500">4. Final Cut:</strong> Let cool completely. Use a pizza cutter to slice the rounds into 2cm wide rectangles (strips). These "fries" shapes are much more toddler-friendly than traditional wedges.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -434,45 +358,25 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 450g Boneless skinless chicken thighs (cut into 1cm bite-sized cubes)</li><li>• 400ml Full-fat coconut milk (canned)</li><li>• 1 tbsp Mild, salt-free curry powder</li><li>• 200g Sweet potato (peeled and diced very small)</li><li>• 1/2 cup Frozen peas</li><li>• 1 tbsp Coconut or olive oil</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 450g Chicken (1cm cubes)</li><li>• 400ml Full-fat coconut milk</li><li>• 1 tbsp Mild curry powder</li><li>• 200g Sweet potato (diced)</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-rose-500">1. Sauté Chicken:</strong> Heat the oil in a large, deep skillet over medium-high heat. Add the diced chicken and cook for 4-5 minutes until browned on the outside.</li><li><strong class="text-rose-500">2. Spice & Simmer:</strong> Lower the heat to medium. Stir in the mild curry powder and cook for 1 minute until fragrant. Pour in the coconut milk and add the finely diced sweet potatoes. Stir well to combine.</li><li><strong class="text-rose-500">3. Cook Through:</strong> Bring the mixture to a gentle simmer, cover, and cook for 15-20 minutes, or until the sweet potatoes are fork-tender and the chicken is fully cooked. Stir in the frozen peas during the last 3 minutes of cooking.</li><li><strong class="text-rose-500">4. Thicken & Serve:</strong> To make the sauce easier for a toddler to eat with a spoon, take a fork and mash some of the soft sweet potato pieces directly into the sauce to naturally thicken it. Let it cool significantly before serving over soft rice.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-rose-500">1. Searing:</strong> Dice the chicken into very small, uniform cubes (1cm). In a deep pan, brown the chicken slightly in olive oil. Add the mild curry powder and stir for 30 seconds until fragrant.</li>
+                                <li><strong class="text-rose-500">2. Liquid & Veg:</strong> Pour in the coconut milk and add the diced sweet potatoes. Ensure the potatoes are also cut small so they soften quickly.</li>
+                                <li><strong class="text-rose-500">3. Simmer:</strong> Bring to a gentle boil, then reduce heat to low. Simmer for 20-25 minutes until the chicken is tender and potatoes are soft.</li>
+                                <li><strong class="text-rose-500">4. Thicken & Serve:</strong> Use a fork to mash some of the sweet potatoes directly into the sauce. This naturally thickens the curry, making it cling to a spoon better for "spoon practice."</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
             </article>
-
         </div>
 
-        <!-- ================= WEEK 2 WRAPPER ================= -->
+        <!-- ================= WEEK 2 RECIPES ================= -->
         <div id="content-week-2" class="week-content hidden space-y-20">
             
-            <section class="scroll-mt-10 bg-indigo-50 rounded-3xl p-6 md:p-10">
-                <h3 class="text-2xl font-extrabold text-indigo-900 mb-6 border-b-2 border-indigo-200 pb-2">Week 2 Groceries & Schedule</h3>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-white p-6 rounded-xl border border-indigo-100 shadow-sm mb-10">
-                    <div><h4 class="font-bold text-indigo-800 mb-3 text-sm uppercase">Produce</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Squash (puree)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Fresh Spinach</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Bananas & Oranges</span></li></ul></div>
-                    <div><h4 class="font-bold text-indigo-800 mb-3 text-sm uppercase">Meat & Fish</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Ground Beef (500g)</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Ground Chicken</span></li></ul></div>
-                    <div><h4 class="font-bold text-indigo-800 mb-3 text-sm uppercase">Dairy</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Cheddar Cheese</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Greek Yogurt</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Eggs</span></li></ul></div>
-                    <div><h4 class="font-bold text-indigo-800 mb-3 text-sm uppercase">Pantry</h4><ul class="space-y-3"><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Macaroni/Fusilli</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Rolled Oats</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Basil Pesto</span></li><li class="flex items-center"><input type="checkbox" class="mr-3"><span class="text-sm">Tomato Soup</span></li></ul></div>
-                </div>
-                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-indigo-100">
-                    <table class="min-w-full text-left text-sm whitespace-nowrap">
-                        <thead class="uppercase tracking-wider border-b border-indigo-100 bg-indigo-50 text-indigo-800 font-bold"><tr><th class="px-6 py-4">Day</th><th class="px-6 py-4">Main Dish</th><th class="px-6 py-4">20-Month Goal</th></tr></thead>
-                        <tbody class="text-indigo-900 font-medium divide-y divide-indigo-50">
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Mon</td><td class="px-6 py-4">Mini Meatloaf Muffins</td><td class="px-6 py-4 text-gray-500">Micro-Portions</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Tue</td><td class="px-6 py-4">Pesto Pea Spirals</td><td class="px-6 py-4 text-gray-500">Fork Practice</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Wed</td><td class="px-6 py-4">White Bean Patties</td><td class="px-6 py-4 text-gray-500">Iron + Vit C Combo</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Thu</td><td class="px-6 py-4">Hidden Veggie Mac</td><td class="px-6 py-4 text-gray-500">Snackcuterie Muffin Tin</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Fri</td><td class="px-6 py-4">Deconstructed Tacos</td><td class="px-6 py-4 text-gray-500">A/B Choice</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Sat</td><td class="px-6 py-4">Banana Oat Pancakes</td><td class="px-6 py-4 text-gray-500">The "Dip" Trick</td></tr>
-                            <tr class="hover:bg-indigo-50/50"><td class="px-6 py-4 font-bold text-indigo-600">Sun</td><td class="px-6 py-4">Tomato Soup & Toast</td><td class="px-6 py-4 text-gray-500">Interactivity (Dunking)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
             <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">6</div><h2 class="text-3xl font-extrabold text-gray-800">Week 2 Recipes</h2></div>
 
             <!-- R8 -->
@@ -483,11 +387,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Lean ground beef</li><li>• 1 Small apple (peeled and finely grated)</li><li>• 1 Medium carrot (peeled and finely grated)</li><li>• 1 Large egg</li><li>• 40g Quick oats (or pulverized rolled oats)</li><li>• 1 tsp Tomato paste</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground Beef</li><li>• 1 Grated Apple & Carrot</li><li>• 1 Egg</li><li>• 40g Rolled Oats</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Prep Produce:</strong> Peel and finely grate the apple and carrot. Squeeze out excess liquid from the grated apple so it doesn't make the mixture too wet.</li><li><strong class="text-indigo-500">2. Mix:</strong> In a large bowl, combine the ground beef, grated apple, grated carrot, egg, oats, and tomato paste. Use your hands to gently mix everything until evenly distributed, being careful not to overwork the meat.</li><li><strong class="text-indigo-500">3. Shape:</strong> Lightly grease a 12-cup muffin tin. Divide the meat mixture evenly among the cups, pressing it down gently so the top is flat.</li><li><strong class="text-indigo-500">4. Bake:</strong> Bake in a preheated oven at 190°C (375°F) for 20-25 minutes. The internal temperature should reach 71°C (160°F). Let the muffins rest in the tin for 5 minutes before popping them out to ensure they hold their shape.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. The Grate Secret:</strong> Fine-grate the apple and carrot. The apple provides natural sweetness and incredible moisture, ensuring the meatloaf isn't dry or crumbly for the toddler.</li>
+                                <li><strong class="text-indigo-500">2. Mix:</strong> Combine the beef, grated veg/fruit, egg, and oats. Oats are used here instead of breadcrumbs for extra fiber and a softer final texture.</li>
+                                <li><strong class="text-indigo-500">3. Shape:</strong> Press the mixture into a greased muffin tin. Fill them to the top; they will shrink slightly as they cook.</li>
+                                <li><strong class="text-indigo-500">4. Bake:</strong> Bake at 190°C (375°F) for 20-25 minutes. Let them sit for 5 minutes before removing. Serve as "micro-portions" to avoid overwhelming the plate.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -501,11 +410,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Fusilli or rotini pasta (the spirals hold sauce best)</li><li>• 100g Frozen sweet peas</li><li>• 2 tbsp High-quality basil pesto (check for no added sugar)</li><li>• 2 tbsp Plain full-fat Greek yogurt</li><li>• 1 tsp Olive oil</li><li>• Optional: a sprinkle of parmesan cheese</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Fusilli Pasta</li><li>• 100g Frozen Peas</li><li>• 2 tbsp Basil Pesto</li><li>• 1 tbsp Greek Yogurt</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Boil Pasta:</strong> Bring a large pot of lightly salted water to a rolling boil. Add the fusilli pasta and cook according to the package directions, adding an extra 1-2 minutes so it's slightly past al dente and very soft for toddler chewing.</li><li><strong class="text-indigo-500">2. Add Peas:</strong> Exactly 2 minutes before the pasta is done, pour the frozen peas directly into the boiling pasta water to blanch them.</li><li><strong class="text-indigo-500">3. Drain:</strong> Drain the pasta and peas thoroughly. Do not rinse them, as the natural starches will help the sauce stick. Return them to the warm (but off-heat) pot.</li><li><strong class="text-indigo-500">4. Coat & Serve:</strong> Stir in the olive oil, basil pesto, and Greek yogurt. Mix vigorously until the pasta is completely coated in a creamy green sauce. Let cool to a safe temperature and sprinkle with parmesan if using.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Boil:</strong> Cook the fusilli in boiling water. For 20-month olds, cook it 1-2 minutes *past* the al dente stage to ensure it's soft enough for their molars.</li>
+                                <li><strong class="text-indigo-500">2. Add Peas:</strong> Throw the frozen peas into the pasta water during the last 2-3 minutes of cooking. Drain everything together.</li>
+                                <li><strong class="text-indigo-500">3. The Creamy Sauce:</strong> In a small bowl, whisk the pesto with the Greek yogurt. This adds protein and tempers the strong flavor of the pesto, making it more palatable for toddlers.</li>
+                                <li><strong class="text-indigo-500">4. Toss:</strong> Mix the pasta, peas, and sauce. The spirals are excellent for "fork practice" as they are easy to stab!</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -519,11 +433,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Can (400g) Cannellini or Great Northern beans (rinsed and drained)</li><li>• 1 Large handful fresh spinach (finely chopped)</li><li>• 1 Large egg</li><li>• 40g Panko breadcrumbs</li><li>• 1/4 tsp Garlic powder</li><li>• 1 tbsp Olive oil for cooking</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Can White Beans</li><li>• 1 Handful Spinach (chopped)</li><li>• 1 Egg</li><li>• 40g Breadcrumbs</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Prep Beans:</strong> Rinse the beans extremely well to remove excess sodium. Place them in a medium bowl and use a potato masher or fork to mash them until mostly smooth, leaving a few chunks for texture.</li><li><strong class="text-indigo-500">2. Combine:</strong> Finely chop the spinach to avoid any stringy choking hazards. Add the chopped spinach, egg, breadcrumbs, and garlic powder to the mashed beans. Stir until a cohesive, slightly sticky dough forms.</li><li><strong class="text-indigo-500">3. Form Patties:</strong> Divide the mixture into 6-8 equal portions. Roll them into balls and flatten them into patties about 1.5cm thick. If the mixture is too wet, add an extra tablespoon of breadcrumbs.</li><li><strong class="text-indigo-500">4. Cook:</strong> Heat olive oil in a non-stick skillet over medium heat. Carefully place the patties in the pan and cook for 3-4 minutes per side until a golden, crispy crust forms. Let cool completely before serving.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Mash the Beans:</strong> Drain and rinse the beans. Place them in a bowl and mash them with a fork until mostly smooth but with a few small chunks for texture.</li>
+                                <li><strong class="text-indigo-500">2. Fold in Greens:</strong> Finely chop the fresh spinach (steam it briefly first if your toddler is picky about raw greens). Mix the spinach, egg, and breadcrumbs into the beans.</li>
+                                <li><strong class="text-indigo-500">3. Chill:</strong> If you have time, chill the mixture for 10 minutes. This makes the patties easier to handle. Form into small, toddler-sized patties.</li>
+                                <li><strong class="text-indigo-500">4. Cook:</strong> Pan-fry in a little oil for 3-4 minutes per side until a crust forms. These are high in iron—pair with a slice of orange for vitamin C absorption!</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -537,11 +456,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Elbow macaroni or small shell pasta</li><li>• 150g Smooth butternut squash or sweet potato puree (canned or homemade)</li><li>• 100g Sharp cheddar cheese (freshly grated melts best)</li><li>• 60ml Whole milk</li><li>• 1 tsp Unsalted butter</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Macaroni</li><li>• 150g Squash/Pumpkin Puree</li><li>• 100g Grated Cheddar</li><li>• 50ml Milk</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Cook Pasta:</strong> Bring a pot of water to a boil and cook the macaroni for 2 minutes longer than the package directions indicate to ensure it is extremely soft and easy for a toddler to manage. Drain well.</li><li><strong class="text-indigo-500">2. Create Veggie Base:</strong> In the same pot (now empty and off the heat), melt the butter. Whisk in the butternut squash puree and the whole milk until smooth. Turn the heat onto the lowest possible setting.</li><li><strong class="text-indigo-500">3. Melt Cheese:</strong> Gradually sprinkle in the grated cheddar cheese, stirring constantly in a figure-eight motion until the cheese is completely melted and the sauce is glossy and smooth. Do not let it boil.</li><li><strong class="text-indigo-500">4. Combine:</strong> Fold the cooked macaroni back into the pot with the cheese sauce. Stir gently until every noodle is coated. If the sauce is too thick, add another splash of milk.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Boil:</strong> Cook the macaroni until very soft. Drain, but reserve a small amount of the pasta water.</li>
+                                <li><strong class="text-indigo-500">2. Create the "Gold" Sauce:</strong> In the same warm pot, combine the squash puree, grated cheddar, and milk. Stir over low heat until the cheese melts and blends into a vibrant orange, silky sauce.</li>
+                                <li><strong class="text-indigo-500">3. Combine:</strong> Return the pasta to the pot and toss to coat. If it's too thick, add a splash of the reserved pasta water.</li>
+                                <li><strong class="text-indigo-500">4. Serve:</strong> Serve in a muffin tin (Snackcuterie style) with peas or diced carrots in the other compartments to keep things interactive.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -555,11 +479,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 100g Leftover cooked ground beef (from meatloaf prep)</li><li>• 50g Canned black beans (rinsed well)</li><li>• 1 Small soft flour tortilla</li><li>• 30g Mild cheddar cheese (shredded)</li><li>• 2 tbsp Plain full-fat Greek yogurt (as a sour cream swap)</li><li>• 1/4 Avocado (mashed)</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• Ground Beef (cooked)</li><li>• Black Beans (smashed)</li><li>• Mild Cheese</li><li>• Whole Wheat Tortilla</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Prep Components:</strong> Warm the leftover ground beef slightly. Take the black beans and gently smash them flat with a fork to remove the round, rolling choking hazard. Mash the avocado until completely smooth.</li><li><strong class="text-indigo-500">2. Cut Tortilla:</strong> Using clean kitchen scissors or a knife, cut the soft flour tortilla into finger-width strips. This makes it easier for 20-month-olds to practice holding and biting.</li><li><strong class="text-indigo-500">3. The "Dip" Setup:</strong> Place the Greek yogurt and mashed avocado in two small, separate silicone muffin liners or tiny bowls to encourage dipping, which toddlers love.</li><li><strong class="text-indigo-500">4. Plate:</strong> Use a divided toddler plate. Place the beef in one section, the smashed beans and cheese in another, the tortilla strips in a third, and the dips in the center. Do NOT assemble the taco, as mixed textures can be overwhelming.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Prep Ingredients:</strong> Ensure the beef is crumbled into very small pieces. Smash the black beans with a fork.</li>
+                                <li><strong class="text-indigo-500">2. Soften the Tortilla:</strong> Warm the tortilla briefly so it's soft, then use a pizza cutter to slice it into long, 1cm wide "ribbons."</li>
+                                <li><strong class="text-indigo-500">3. Plate Construction:</strong> Do not build the taco. Place the beef, the bean mash, the cheese, and the tortilla strips in separate piles on a divided plate.</li>
+                                <li><strong class="text-indigo-500">4. Interactive Eating:</strong> This "deconstructed" style reduces overwhelm and lets the toddler explore each texture individually—perfect for the "Control Freak Phase."</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -573,11 +502,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Very ripe, spotty banana (the browner, the sweeter)</li><li>• 1 Large egg</li><li>• 40g Rolled oats</li><li>• 1/4 tsp Cinnamon</li><li>• 1/2 tsp Vanilla extract</li><li>• 1 tsp Butter or coconut oil (for the pan)</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Very Ripe Banana</li><li>• 1 Large Egg</li><li>• 40g Rolled Oats (blitzed)</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Blend Batter:</strong> Place the rolled oats in a blender and pulse a few times until they form a coarse flour. Add the ripe banana, egg, cinnamon, and vanilla extract. Blend on high until completely smooth and bubbly. Let the batter sit for 3 minutes to thicken.</li><li><strong class="text-indigo-500">2. Heat Pan:</strong> Melt the butter or coconut oil in a large non-stick skillet over medium-low heat. It's crucial not to have the heat too high, or the outside will burn before the inside cooks.</li><li><strong class="text-indigo-500">3. Pour:</strong> Pour small, silver-dollar-sized circles of batter into the pan (about 1.5 tablespoons each). Small pancakes are easier to flip and perfect for toddler hands.</li><li><strong class="text-indigo-500">4. Cook & Flip:</strong> Cook for 2-3 minutes until you see tiny bubbles forming on the surface and the edges look set. Gently flip and cook for another 1-2 minutes until golden brown. Cool completely before serving.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Blend to Smooth:</strong> Place the banana, egg, and oats in a blender. Blitz until completely smooth. Using oats instead of flour creates a much softer pancake that is safer for early chewers.</li>
+                                <li><strong class="text-indigo-500">2. Low & Slow:</strong> Heat a non-stick pan over medium-low heat with a tiny bit of butter. These pancakes have no flour, so they burn easily if the heat is too high.</li>
+                                <li><strong class="text-indigo-500">3. Pouring:</strong> Pour small, "dollar-sized" circles (about 5cm wide). This makes them easier for small hands to pick up.</li>
+                                <li><strong class="text-indigo-500">4. The Flip:</strong> Wait for small bubbles to form on the surface, then gently flip. Cook for 1 more minute. Serve with a "dip" of Greek yogurt.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -591,11 +525,16 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
                             <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 150ml Low-sodium, creamy tomato soup (check labels for no added sugar)</li><li>• 1 Slice whole wheat or sourdough bread</li><li>• 1 Slice mild cheddar or provolone cheese</li><li>• 1 tsp Butter (softened)</li><li>• 1 tbsp Heavy cream or whole milk (optional)</li></ul>
+                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• Low-Sodium Tomato Soup</li><li>• 1 slice Bread</li><li>• 1 slice Cheddar</li></ul>
                         </div>
                         <div class="col-span-2">
                             <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700"><li><strong class="text-indigo-500">1. Prepare Soup:</strong> Pour the tomato soup into a small saucepan. Heat over low heat until just warm to the touch—never hot, as toddler mouths are very sensitive to temperature. Stir in a tablespoon of cream or milk to cool it down and add extra calories.</li><li><strong class="text-indigo-500">2. Make Grilled Cheese:</strong> Heat a small skillet over medium heat. Butter one side of the bread slice. Place it butter-side down in the skillet, add the cheese slice, and if using half a slice of bread folded, fold it over. Cook until the bread is golden and the cheese is melted.</li><li><strong class="text-indigo-500">3. Cut for Dunking:</strong> Remove the grilled cheese from the pan and let it cool slightly. Using a sharp knife, cut the sandwich into long, thin strips (about 1.5cm wide).</li><li><strong class="text-indigo-500">4. Serve:</strong> Serve the lukewarm soup in a shallow bowl or a mug with handles alongside the cheese strips, demonstrating to the toddler how to "dunk" the strips into the soup for interactive eating.</li></ol>
+                            <ol class="space-y-4 text-sm text-gray-700">
+                                <li><strong class="text-indigo-500">1. Soup Temp:</strong> Warm the tomato soup until it is just above room temperature. Never serve "hot" to a toddler. If it's too thin, stir in a spoonful of yogurt to make it more nutrient-dense.</li>
+                                <li><strong class="text-indigo-500">2. Grilled Cheese:</strong> Make a simple grilled cheese sandwich. Use a tiny bit of butter and keep the crusts soft.</li>
+                                <li><strong class="text-indigo-500">3. Soldiers:</strong> Use a knife to cut the sandwich into long "soldiers" (strips about 1.5cm wide).</li>
+                                <li><strong class="text-indigo-500">4. Interaction:</strong> Demonstrate the "dunking" action. This provides a "job" for the toddler and makes the meal interactive rather than a chore.</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -626,10 +565,23 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
 </main>
 
 <script>
-    // To sideload locally with your own API Key, paste it here!
-    const apiKey = "AIzaSyBOLxU6F6XAoY_uML_dv3XFtMZohfFurKU"; 
+    const apiKey = ""; 
 
-    // Mobile Navigation logic
+    async function fetchWithRetry(url, options) {
+        const delays = [1000, 2000, 4000, 8000, 16000];
+        for (let i = 0; i < delays.length; i++) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                if (i === delays.length - 1) throw error;
+                await new Promise(resolve => setTimeout(resolve, delays[i]));
+            }
+        }
+    }
+
+    // Mobile Navigation
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
@@ -652,132 +604,40 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
         else activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
     }
 
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const targetId = link.getAttribute('href').substring(1);
-            if (targetId.startsWith('recipe-')) {
-                parseInt(targetId.split('-')[1]) >= 8 ? toggleWeek(2) : toggleWeek(1);
-            }
-            if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
-        });
-    });
-
-    // Helper fetch function
-    async function fetchWithRetry(url, options, retries = 3) {
-        let delay = 1000;
-        for (let i = 0; i < retries; i++) {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData?.error?.message || `HTTP status: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                if (i === retries - 1) throw error;
-                await new Promise(resolve => setTimeout(resolve, delay));
-                delay *= 2; 
-            }
-        }
-    }
-
-    // NEW LOGIC: Ask Google for allowed models instead of hardcoding
-    let activeTextModel = null;
-    let activeImageModel = null;
-
-    async function initializeModels() {
-        if (!apiKey) return;
-        
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-            const response = await fetch(url);
-            if (!response.ok) throw new Error("Could not fetch models list.");
-            const data = await response.json();
-            const models = data.models || [];
-
-            // 1. Find a text model
-            const textModels = models.filter(m => 
-                m.supportedGenerationMethods && 
-                m.supportedGenerationMethods.includes('generateContent') && 
-                m.name.includes('gemini')
-            );
-            
-            // Prefer Pro or Flash over older models
-            const preferredText = textModels.find(m => m.name.includes('gemini-1.5-flash-002')) || 
-                                  textModels.find(m => m.name.includes('gemini-1.5-flash')) || 
-                                  textModels.find(m => m.name.includes('gemini-1.5-pro')) || 
-                                  textModels[0]; // fallback to whatever works
-            
-            if (preferredText) activeTextModel = preferredText.name.replace('models/', '');
-
-            // 2. Find an image model
-            const imgModels = models.filter(m => m.name.includes('imagen'));
-            const preferredImg = imgModels.find(m => m.name.includes('imagen-3.0')) || imgModels[0];
-            
-            if (preferredImg) activeImageModel = preferredImg.name.replace('models/', '');
-
-            console.log("Successfully mapped APIs:", activeTextModel, activeImageModel);
-
-        } catch (error) {
-            console.error("Error initializing models:", error);
-            // Hardcode fallbacks just in case the models endpoint fails
-            activeTextModel = "gemini-1.5-flash";
-            activeImageModel = "imagen-3.0-generate-001";
-        }
-    }
-
-    // Run mapping on load
-    window.addEventListener('load', initializeModels);
-
     // AI Generation Logic
     const btnGenerate = document.getElementById('btn-generate-recipe');
     btnGenerate.addEventListener('click', async () => {
         const ingredients = document.getElementById('ai-ingredients').value.trim();
         const mealType = document.getElementById('ai-meal-type').value;
-        const validationError = document.getElementById('ai-validation-error');
-        
-        validationError.classList.add('hidden');
-        if (!ingredients) {
-            document.getElementById('ai-validation-text').textContent = "Please enter some ingredients!";
-            validationError.classList.remove('hidden'); return;
-        }
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        const finalApiKey = userApiKey || apiKey;
 
-        if (!apiKey) {
-            document.getElementById('ai-validation-text').textContent = "API key is missing in the code.";
-            validationError.classList.remove('hidden'); return;
+        const errorMsg = document.getElementById('api-key-error');
+        errorMsg.classList.add('hidden');
+
+        if (!ingredients) return;
+        if (!finalApiKey) {
+            errorMsg.classList.remove('hidden');
+            return;
         }
 
         const recipeCard = document.getElementById('generated-recipe-card');
         const globalLoading = document.getElementById('ai-global-loading');
-        const globalError = document.getElementById('ai-global-error');
-        const loadingDetails = document.getElementById('ai-loading-details');
+        const imgLoading = document.getElementById('gen-image-loading');
+        const generatedImg = document.getElementById('gen-recipe-image');
         
-        recipeCard.classList.add('hidden'); globalError.classList.add('hidden');
+        recipeCard.classList.add('hidden');
         globalLoading.classList.remove('hidden');
-        document.getElementById('gen-image-loading').classList.remove('hidden');
-        document.getElementById('gen-recipe-image').classList.add('hidden');
-        
-        btnGenerate.disabled = true; btnGenerate.classList.add('opacity-75', 'cursor-not-allowed');
+        imgLoading.classList.remove('hidden');
+        imgLoading.classList.add('flex');
+        generatedImg.classList.add('hidden');
+        btnGenerate.disabled = true;
 
-        // Make sure models are loaded. If not, try again now.
-        if (!activeTextModel) await initializeModels();
-        if (!activeTextModel) {
-            globalLoading.classList.add('hidden'); globalError.classList.remove('hidden');
-            document.getElementById('ai-error-text').textContent = "Could not verify API models for your key.";
-            btnGenerate.disabled = false; btnGenerate.classList.remove('opacity-75', 'cursor-not-allowed');
-            return;
-        }
-
-        loadingDetails.textContent = `Using: ${activeTextModel}`;
-
-        let recipeData = null;
-
-        // --- STEP 1: GENERATE TEXT ---
         try {
-            const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeTextModel}:generateContent?key=${apiKey}`;
+            // Text Generation
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${finalApiKey}`;
             const textPayload = {
-                contents: [{ parts: [{ text: `Create a ${mealType} recipe using: ${ingredients}. Keep it safe for 20-month olds. No honey or hard round foods.` }] }],
+                contents: [{ parts: [{ text: `Create a ${mealType} recipe using: ${ingredients}. Keep it safe for 20-month olds.` }] }],
                 systemInstruction: { parts: [{ text: "You are a toddler nutritionist. Create safe recipes." }] },
                 generationConfig: {
                     responseMimeType: "application/json",
@@ -796,48 +656,52 @@ input[type="checkbox"]:checked::before { transform: scale(1); }
             };
 
             const textResult = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
-            const rawText = textResult.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!rawText) throw new Error("Failed to generate recipe.");
-            
-            recipeData = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
+            const recipeData = JSON.parse(textResult.candidates[0].content.parts[0].text);
 
             document.getElementById('gen-recipe-title').textContent = recipeData.title;
             document.getElementById('gen-recipe-tip').textContent = recipeData.toddler_tip;
-            
             const ingUl = document.getElementById('gen-recipe-ingredients'); ingUl.innerHTML = '';
             recipeData.ingredients.forEach(ing => ingUl.innerHTML += `<li>• ${ing}</li>`);
-
             const instOl = document.getElementById('gen-recipe-instructions'); instOl.innerHTML = '';
             recipeData.instructions.forEach((inst, i) => instOl.innerHTML += `<li><strong class="text-purple-600">${i + 1}.</strong> ${inst}</li>`);
 
-            globalLoading.classList.add('hidden'); recipeCard.classList.remove('hidden');
-        } catch (error) {
-            globalLoading.classList.add('hidden'); globalError.classList.remove('hidden');
-            document.getElementById('ai-error-text').textContent = error.message;
-            btnGenerate.disabled = false; btnGenerate.classList.remove('opacity-75', 'cursor-not-allowed');
-            return;
-        }
+            globalLoading.classList.add('hidden');
+            recipeCard.classList.remove('hidden');
 
-        // --- STEP 2: GENERATE IMAGE ---
-        try {
-            if (!activeImageModel) throw new Error("No image models found for this API key.");
-            document.getElementById('gen-image-details').textContent = `Using: ${activeImageModel}`;
-
-            const imgUrl = `https://generativelanguage.googleapis.com/v1beta/models/${activeImageModel}:predict?key=${apiKey}`;
+            // Image Generation
+            const imgUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${finalApiKey}`;
             const imgPayload = { instances: { prompt: recipeData.image_prompt }, parameters: { sampleCount: 1 } };
             
-            const imgResult = await fetchWithRetry(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) }, 2);
+            const imgResult = await fetchWithRetry(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) });
+            
             if (imgResult.predictions && imgResult.predictions[0]) {
-                const generatedImg = document.getElementById('gen-recipe-image');
                 generatedImg.src = `data:image/png;base64,${imgResult.predictions[0].bytesBase64Encoded}`;
-                document.getElementById('gen-image-loading').classList.add('hidden');
+                imgLoading.classList.add('hidden');
+                imgLoading.classList.remove('flex');
                 generatedImg.classList.remove('hidden');
-            } else throw new Error("No prediction found.");
-        } catch (error) {
-            document.getElementById('gen-image-loading').innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl m-6 text-center w-3/4"><p class="text-red-800 font-bold mb-1">Image Failed</p><p class="text-red-600 text-xs font-mono">${error.message}</p></div>`;
+            } else {
+                throw new Error("No image generated");
+            }
+
+        } catch (e) {
+            console.error(e);
+            globalLoading.classList.add('hidden');
+            imgLoading.innerHTML = `<p class="text-red-600 font-bold text-sm">Image generation failed.</p>`;
         } finally {
-            btnGenerate.disabled = false; btnGenerate.classList.remove('opacity-75', 'cursor-not-allowed');
+            btnGenerate.disabled = false;
         }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href').substring(1);
+            if (targetId.startsWith('recipe-')) {
+                const num = parseInt(targetId.split('-')[1]);
+                num >= 8 ? toggleWeek(2) : toggleWeek(1);
+            }
+            if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
+        });
     });
 </script>
 </body>
