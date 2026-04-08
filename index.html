@@ -8,17 +8,45 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
         body { font-family: 'Nunito', sans-serif; background-color: #fcfaf8; color: #334155; }
-        input[type="checkbox"] { appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor; width: 1.25em; height: 1.25em; border: 2px solid #cbd5e1; border-radius: 0.25em; display: grid; place-content: center; cursor: pointer; transition: all 0.2s ease-in-out; }
-        input[type="checkbox"]::before { content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em white; background-color: transparent; transform-origin: bottom left; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
-        input[type="checkbox"]:checked { background-color: #f97316; border-color: #f97316; }
-        input[type="checkbox"]:checked::before { transform: scale(1); }
+        input[type="checkbox"], input[type="radio"] { appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor; border: 2px solid #cbd5e1; display: grid; place-content: center; cursor: pointer; transition: all 0.2s ease-in-out; }
+        input[type="checkbox"] { width: 1.25em; height: 1.25em; border-radius: 0.25em; }
+        input[type="radio"] { width: 1.25em; height: 1.25em; border-radius: 50%; }
+        input[type="checkbox"]::before, input[type="radio"]::before { content: ""; transform: scale(0); transition: 120ms transform ease-in-out; background-color: transparent; }
+        input[type="checkbox"]::before { width: 0.65em; height: 0.65em; box-shadow: inset 1em 1em white; transform-origin: bottom left; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+        input[type="radio"]::before { width: 0.65em; height: 0.65em; border-radius: 50%; box-shadow: inset 1em 1em white; }
+        input[type="checkbox"]:checked, input[type="radio"]:checked { background-color: #f97316; border-color: #f97316; }
+        input[type="checkbox"]:checked::before, input[type="radio"]:checked::before { transform: scale(1); }
+        
+        /* Custom larger checkboxes for combine mode */
+        .combine-checkbox { width: 2em !important; height: 2em !important; border-radius: 0.5em !important; border-width: 3px !important; }
+        .combine-checkbox:checked { background-color: #14b8a6 !important; border-color: #14b8a6 !important; }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes sparkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
         .animate-sparkle { animation: sparkle 2s infinite ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row h-[100dvh] overflow-hidden">
+
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+<!-- Combine Mode Bottom Bar -->
+<div id="combine-bar" class="hidden fixed bottom-0 left-0 w-full bg-white border-t-4 border-teal-500 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] p-4 md:p-6 flex flex-col md:flex-row justify-between items-center z-[100] transform transition-transform translate-y-full">
+    <div class="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
+        <div class="bg-teal-100 text-teal-800 font-black px-4 py-2 rounded-xl text-lg flex items-center min-w-[140px] justify-center">
+            <span id="combine-count" class="mr-2">0</span> Selected
+        </div>
+        <input type="text" id="combine-name" class="flex-1 border-2 border-gray-200 p-3 rounded-xl focus:border-teal-500 focus:ring-4 focus:ring-teal-100 outline-none font-bold text-gray-700" placeholder="Name your day (e.g. Taco Tuesday)">
+    </div>
+    <div class="flex gap-3 w-full md:w-auto">
+        <button onclick="cancelCombine()" class="flex-1 md:flex-none bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-xl transition-colors">Cancel</button>
+        <button onclick="saveCombineDay()" class="flex-1 md:flex-none bg-teal-500 hover:bg-teal-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-transform active:scale-95">Save "My Day" ✨</button>
+    </div>
+</div>
 
 <div class="md:hidden bg-white shadow-sm p-4 flex justify-between items-center z-50">
     <h1 class="font-extrabold text-xl text-orange-500">Little Foodie</h1>
@@ -30,50 +58,56 @@
 <nav id="sidebar" class="bg-white w-full md:w-72 md:flex-shrink-0 border-r border-gray-100 h-full overflow-y-auto no-scrollbar absolute md:relative z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
     <div class="p-6">
         <h1 class="font-black text-2xl text-orange-500 mb-1 hidden md:block">The Little Foodie</h1>
-        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-8 hidden md:block">20-Month Specific</p>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-8 hidden md:block">BLW Pro Edition</p>
         <ul class="space-y-6">
+            <li>
+                <p class="text-xs font-bold text-yellow-500 uppercase tracking-wider mb-3 flex items-center">My Cookbook</p>
+                <ul class="space-y-2">
+                    <li><a href="#" onclick="showHome(); return false;" class="nav-link block text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-lg font-bold transition-colors bg-gray-50">🏠 Home / Tools</a></li>
+                    <li><a href="#" onclick="showSaved(); return false;" class="nav-link block text-gray-600 hover:text-yellow-600 hover:bg-yellow-50 px-3 py-2 rounded-lg font-bold transition-colors">⭐ Saved Recipes & Days</a></li>
+                </ul>
+            </li>
             <li>
                 <p class="text-xs font-bold text-orange-400 uppercase tracking-wider mb-3">Psychology & Hacks</p>
                 <ul class="space-y-2">
-                    <li><a href="#psychology" class="nav-link block text-gray-600 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-lg font-semibold transition-colors">The 20-Month Brain</a></li>
-                    <li><a href="#presentation" class="nav-link block text-gray-600 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-lg font-semibold transition-colors">Presentation Tricks</a></li>
-                    <li><a href="#swaps" class="nav-link block text-gray-600 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-lg font-semibold transition-colors">Emergency Swaps</a></li>
+                    <li><a href="#psychology" onclick="showHome();" class="nav-link block text-gray-600 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-lg font-semibold transition-colors">The 20-Month Brain</a></li>
+                    <li><a href="#cooking-hacks" onclick="showHome();" class="nav-link block text-gray-600 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-lg font-semibold transition-colors">BLW Cooking Pro-Tips</a></li>
                 </ul>
             </li>
             <li>
                 <p class="text-xs font-bold text-purple-500 uppercase tracking-wider mb-3 flex items-center">AI Tools <span class="ml-2 text-lg animate-sparkle">✨</span></p>
                 <ul class="space-y-2">
-                    <li><a href="#ai-generator" class="nav-link block text-purple-700 hover:text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg font-bold transition-colors border border-purple-100">Magic Recipe Maker</a></li>
+                    <li><a href="#ai-generator" onclick="showHome();" class="nav-link block text-purple-700 hover:text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg font-bold transition-colors border border-purple-100">Magic Recipe Maker</a></li>
                 </ul>
             </li>
             <li>
                 <p class="text-xs font-bold text-teal-500 uppercase tracking-wider mb-3">Planning</p>
                 <ul class="space-y-2">
-                    <li><a href="#planning-hub" class="nav-link block text-gray-600 hover:text-teal-500 hover:bg-teal-50 px-3 py-2 rounded-lg font-semibold transition-colors">The Rotating Menu</a></li>
+                    <li><a href="#planning-hub" onclick="showHome();" class="nav-link block text-gray-600 hover:text-teal-500 hover:bg-teal-50 px-3 py-2 rounded-lg font-semibold transition-colors">The Rotating Menu</a></li>
                 </ul>
             </li>
             <li>
                 <p class="text-xs font-bold text-rose-500 uppercase tracking-wider mb-3">Week 1 Recipes</p>
                 <ul class="space-y-2">
-                    <li><a href="#recipe-1" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">1. Turkey Meatballs</a></li>
-                    <li><a href="#recipe-2" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">2. Salmon Fingers</a></li>
-                    <li><a href="#recipe-3" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">3. Bean Quesadillas</a></li>
-                    <li><a href="#recipe-4" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">4. Lentil Sweet Potato Cups</a></li>
-                    <li><a href="#recipe-5" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">5. Chicken Fritters</a></li>
-                    <li><a href="#recipe-6" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">6. Homemade Pizza Strips</a></li>
-                    <li><a href="#recipe-7" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">7. Coconut Curry</a></li>
+                    <li><a href="#recipe-1" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">1. Turkey Meatballs</a></li>
+                    <li><a href="#recipe-2" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">2. Salmon Fingers</a></li>
+                    <li><a href="#recipe-3" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">3. Bean Quesadillas</a></li>
+                    <li><a href="#recipe-4" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">4. Lentil Sweet Potato Cups</a></li>
+                    <li><a href="#recipe-5" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">5. Chicken Fritters</a></li>
+                    <li><a href="#recipe-6" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">6. Homemade Pizza Strips</a></li>
+                    <li><a href="#recipe-7" onclick="showHome();" class="nav-link block text-gray-600 hover:text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg font-semibold transition-colors">7. Coconut Curry</a></li>
                 </ul>
             </li>
             <li>
                 <p class="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-3">Week 2 Recipes</p>
                 <ul class="space-y-2">
-                    <li><a href="#recipe-8" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">8. Mini Meatloaf Muffins</a></li>
-                    <li><a href="#recipe-9" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">9. Pesto Pea Spirals</a></li>
-                    <li><a href="#recipe-10" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">10. White Bean Patties</a></li>
-                    <li><a href="#recipe-11" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">11. Hidden Veggie Mac</a></li>
-                    <li><a href="#recipe-12" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">12. Deconstructed Tacos</a></li>
-                    <li><a href="#recipe-13" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">13. Banana Oat Pancakes</a></li>
-                    <li><a href="#recipe-14" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">14. Tomato Soup & Toast</a></li>
+                    <li><a href="#recipe-8" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">8. Mini Meatloaf Muffins</a></li>
+                    <li><a href="#recipe-9" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">9. Pesto Pea Spirals</a></li>
+                    <li><a href="#recipe-10" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">10. White Bean Patties</a></li>
+                    <li><a href="#recipe-11" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">11. Hidden Veggie Mac</a></li>
+                    <li><a href="#recipe-12" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">12. Deconstructed Tacos</a></li>
+                    <li><a href="#recipe-13" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">13. Banana Oat Pancakes</a></li>
+                    <li><a href="#recipe-14" onclick="showHome();" class="nav-link block text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 px-3 py-2 rounded-lg font-semibold transition-colors">14. Tomato Soup & Toast</a></li>
                 </ul>
             </li>
         </ul>
@@ -81,512 +115,442 @@
 </nav>
 
 <main class="flex-1 min-h-0 overflow-y-auto h-full scroll-smooth relative" id="main-content">
-    <div class="bg-gradient-to-br from-orange-400 to-rose-400 text-white p-10 md:p-20 text-center">
-        <h1 class="text-4xl md:text-6xl font-black mb-4">The Little Foodie</h1>
-        <p class="text-xl md:text-2xl font-semibold opacity-90">20-Month Specific: Psychology & Survival</p>
-    </div>
+    
+    <!-- WRAPPER FOR HOME VIEW -->
+    <div id="home-view" class="block">
+        <div class="bg-gradient-to-br from-orange-400 to-rose-400 text-white p-10 md:p-20 text-center">
+            <h1 class="text-4xl md:text-6xl font-black mb-4">The Little Foodie</h1>
+            <p class="text-xl md:text-2xl font-semibold opacity-90">BLW Pro & Cutlery Masters Edition</p>
+        </div>
 
-    <div class="max-w-5xl mx-auto p-6 md:p-10 space-y-20">
+        <div class="max-w-5xl mx-auto p-6 md:p-10 space-y-20">
 
-        <!-- PSYCHOLOGY SECTION -->
-        <section id="psychology" class="scroll-mt-10">
-            <div class="flex items-center mb-8">
-                <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">1</div>
-                <h2 class="text-3xl font-extrabold text-gray-800">Inside the 20-Month-Old Brain</h2>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-50">
-                    <div class="text-3xl mb-4">🍎</div>
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">The Gravity Scientists</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">At 20 months, throwing food isn't malicious—it's physics! Calmly say, "Food stays on the tray." If it happens again, mealtime is paused.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-50">
-                    <div class="text-3xl mb-4">📉</div>
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">The Appetite Drop-Off</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Babies triple their weight in year one. As they approach 2 years, growth slows down. What looks like "starving" is often adequate for them.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-50">
-                    <div class="text-3xl mb-4">👑</div>
-                    <h3 class="font-bold text-lg mb-2 text-gray-800">The Control Freak Phase</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Food is one of the only things they have 100% control over. Refusing food is often just them flexing their new autonomy muscle.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- AI RECIPE GENERATOR SECTION -->
-        <section id="ai-generator" class="scroll-mt-10 mb-20">
-            <div class="flex items-center mb-8">
-                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mr-4 font-black">✨</div>
-                <div>
-                    <h2 class="text-3xl font-extrabold text-gray-800">Magic Recipe Maker</h2>
-                    <p class="text-gray-500 font-medium mt-1">Tell AI what's in your fridge, and it'll create a toddler-safe recipe with a photo!</p>
-                </div>
-            </div>
-
-            <div class="bg-purple-50 rounded-3xl p-6 md:p-10 border border-purple-200 shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10">
-                    <svg class="w-32 h-32 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
-                </div>
-                <div class="relative z-10 grid md:grid-cols-2 gap-8">
-                    <div>
-                        <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Gemini API Key</label>
-                        <input type="password" id="user-api-key" class="w-full rounded-xl border-2 border-purple-200 p-3 mb-4 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700" placeholder="Paste your API key here">
-
-                        <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Ingredients on Hand</label>
-                        <textarea id="ai-ingredients" rows="4" class="w-full rounded-xl border-2 border-purple-200 p-4 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all resize-none text-gray-700" placeholder="e.g., half a sweet potato, leftover pasta, frozen peas, cheddar cheese..."></textarea>
-                        
-                        <label class="block text-sm font-bold text-purple-900 mb-2 mt-4 uppercase tracking-wide">Meal Type</label>
-                        <select id="ai-meal-type" class="w-full rounded-xl border-2 border-purple-200 p-4 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700 bg-white">
-                            <option value="Lunch/Dinner">Lunch or Dinner</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Snack">Healthy Snack</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col justify-end">
-                        <p class="text-sm text-purple-700 mb-4 bg-white/50 p-4 rounded-xl border border-purple-100">
-                            <strong>How it works:</strong> Gemini AI will analyze your ingredients, ensure they are toddler safe, and craft a recipe.
-                        </p>
-                        
-                        <!-- NEW VALIDATION MESSAGE BOX -->
-                        <div id="form-error" class="hidden mb-4 bg-red-50 text-red-600 font-bold p-3 rounded-lg border border-red-200 text-sm">
-                            Please fill out all fields.
+            <!-- PSYCHOLOGY SECTION -->
+            <section id="psychology" class="scroll-mt-10">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">1</div>
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-gray-800">Inside the 20-Month-Old Brain</h2>
+                            <p class="text-gray-500 font-medium mt-1">Scroll to view more, or generate fresh tips using AI.</p>
                         </div>
-
-                        <button id="btn-generate-recipe" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center group">
-                            Generate Magic Recipe
-                        </button>
                     </div>
-                </div>
-            </div>
-
-            <!-- GLOBAL ERROR BOX IF THE API FAILS -->
-            <div id="ai-global-error" class="hidden mt-10 bg-red-50 rounded-2xl p-6 border border-red-200 text-center shadow-sm">
-                <p class="text-red-800 font-bold text-lg mb-2">Oops! The AI Chef hit a snag.</p>
-                <p class="text-red-600 font-medium font-mono text-sm bg-white p-3 rounded-lg border border-red-100 inline-block" id="ai-error-text">Details will appear here.</p>
-            </div>
-
-            <!-- GLOBAL LOADING SPINNER -->
-            <div id="ai-global-loading" class="hidden mt-10 bg-white rounded-3xl p-10 border border-purple-100 shadow-sm text-center">
-                <svg class="animate-spin h-12 w-12 text-purple-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <h3 class="text-xl font-bold text-purple-900 mb-2">Cooking up an idea...</h3>
-                <p id="ai-loading-status" class="text-purple-600 font-medium text-sm mt-2">Checking available models...</p>
-            </div>
-
-            <!-- THE GENERATED RECIPE OUTPUT -->
-            <article id="generated-recipe-card" class="hidden mt-10 bg-white rounded-3xl shadow-lg border-2 border-purple-300 overflow-hidden relative">
-                <div class="absolute top-4 right-4 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10 flex items-center">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
-                    AI Generated
+                    <button id="btn-refresh-tips" class="text-sm bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold py-3 px-6 rounded-xl transition-all border-2 border-orange-200 flex items-center justify-center shadow-sm whitespace-nowrap">
+                        Generate New Tips ✨
+                    </button>
                 </div>
                 
-                <div class="relative w-full h-72 bg-gray-100 flex flex-col items-center justify-center border-b border-gray-200">
-                    <img id="gen-recipe-image" class="w-full h-full object-cover hidden" alt="Generated Recipe Image" />
-                    <div id="gen-image-loading" class="hidden flex-col items-center p-6 text-center">
-                        <svg class="animate-spin h-10 w-10 text-purple-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <p class="text-purple-700 font-bold text-sm animate-pulse" id="img-loading-text">Plating the dish (Generating Image)...</p>
+                <div id="psychology-error" class="hidden mb-4 bg-red-50 text-red-600 font-bold p-3 rounded-lg border border-red-200 text-sm">
+                    Please paste your Gemini API Key in the "Magic Recipe Maker" section below first!
+                </div>
+
+                <div class="max-h-[500px] overflow-y-auto pr-4 no-scrollbar bg-gray-50/50 rounded-3xl p-6 border border-gray-100 shadow-inner">
+                    <div id="psychology-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">🍎</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Gravity Scientists</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">At 20 months, throwing food isn't malicious—it's physics! Calmly say, "Food stays on the tray." If it happens again, mealtime is paused.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">📉</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Appetite Drop-Off</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Babies triple their weight in year one. As they approach 2 years, growth slows down. What looks like "starving" is often adequate for them.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">👑</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Control Freak Phase</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Food is one of the only things they have 100% control over. Refusing food is often just them flexing their new autonomy muscle.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">🥦</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">Food Chaining</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Introduce challenging foods by linking them to accepted ones. If they like french fries, try sweet potato fries next, then roasted carrots.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">🍓</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Sweet Bridge</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Pairing a difficult vegetable with a familiar, highly desired fruit (like serving spinach patties next to strawberries) makes the entire plate feel "safe."</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                            <div class="text-3xl mb-4">⚖️</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">Division of Responsibility</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">You decide <em>what</em>, <em>when</em>, and <em>where</em> they eat. They decide <em>if</em> and <em>how much</em>. This instantly removes major mealtime power struggles!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COOKING HACKS SECTION -->
+            <section id="cooking-hacks" class="scroll-mt-10">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">2</div>
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-gray-800">BLW Cooking Pro-Tips</h2>
+                            <p class="text-gray-500 font-medium mt-1">General hacks & nutritional tricks for optimal prep.</p>
+                        </div>
+                    </div>
+                    <button id="btn-refresh-hacks" class="text-sm bg-amber-50 hover:bg-amber-100 text-amber-600 font-bold py-3 px-6 rounded-xl transition-all border-2 border-amber-200 flex items-center justify-center shadow-sm whitespace-nowrap">
+                        Generate New Hacks ✨
+                    </button>
+                </div>
+                
+                <div id="hacks-error" class="hidden mb-4 bg-red-50 text-red-600 font-bold p-3 rounded-lg border border-red-200 text-sm">
+                    Please paste your Gemini API Key in the "Magic Recipe Maker" section below first!
+                </div>
+
+                <div class="max-h-[500px] overflow-y-auto pr-4 no-scrollbar bg-gray-50/50 rounded-3xl p-6 border border-gray-100 shadow-inner">
+                    <div id="hacks-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
+                            <div class="text-3xl mb-4">🥒</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Dry Zucchini Rule</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Whenever adding grated veggies to meatballs or fritters, wring them out in a towel until bone-dry. It prevents the mix from falling apart into mush!</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
+                            <div class="text-3xl mb-4">🧊</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Freezer Secret</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Freeze cooked items (like fritters or patties) flat on a baking tray for 2 hours *before* bagging them. They won't stick together this way.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100">
+                            <div class="text-3xl mb-4">🩸</div>
+                            <h3 class="font-bold text-lg mb-2 text-gray-800">The Iron Combo</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Plant-based iron (lentils, beans) is hard for bodies to absorb. Always pair them with Vitamin C (strawberries, tomatoes, bell peppers) to boost absorption by up to 300%!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI RECIPE GENERATOR SECTION -->
+            <section id="ai-generator" class="scroll-mt-10 mb-20">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mr-4 font-black">✨</div>
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-gray-800">Magic Recipe Maker</h2>
+                        <p class="text-gray-500 font-medium mt-1">Generate quick recipes or plan an entire day of meals!</p>
                     </div>
                 </div>
 
-                <div class="p-6 md:p-10">
-                    <h3 id="gen-recipe-title" class="text-3xl font-extrabold text-gray-900 mb-6">Recipe Title</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-purple-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-purple-900 mb-4 border-b border-purple-200 pb-2">Ingredients</h4>
-                            <ul id="gen-recipe-ingredients" class="space-y-2 text-sm text-gray-700 font-medium"></ul>
+                <div class="bg-purple-50 rounded-3xl p-6 md:p-10 border border-purple-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                        <svg class="w-32 h-32 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                    </div>
+                    
+                    <!-- Mode Toggle -->
+                    <div class="flex gap-2 mb-6 bg-purple-100/50 p-1.5 rounded-xl w-fit border border-purple-200 relative z-10">
+                        <button id="mode-quick-btn" onclick="switchAIMode('quick')" class="px-5 py-2.5 bg-white text-purple-700 font-black rounded-lg shadow-sm text-sm transition-all">Quick Recipes</button>
+                        <button id="mode-planner-btn" onclick="switchAIMode('planner')" class="px-5 py-2.5 text-purple-600 hover:text-purple-800 hover:bg-purple-100/50 font-bold rounded-lg text-sm transition-all">Daily Inspiration</button>
+                    </div>
+
+                    <div class="relative z-10">
+                        <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Gemini API Key</label>
+                        <input type="password" id="user-api-key" class="w-full rounded-xl border-2 border-purple-200 p-3 mb-6 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700" placeholder="Paste your API key here">
+
+                        <!-- Nutritional Categories Input & Common Ingredients Side-by-Side -->
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-bold text-purple-900 uppercase tracking-wide">Ingredients on Hand</label>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Inputs Area -->
+                                <div class="md:col-span-2 bg-white rounded-xl border-2 border-purple-200 p-4 space-y-3 shadow-inner">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs text-purple-600 font-bold bg-purple-100 px-2 py-1 rounded-md">Categorized for better parsing</span>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-500 uppercase flex items-center"><span class="mr-2 text-lg">🍗</span> Proteins</label>
+                                        <input type="text" id="ing-proteins" class="w-full border-b-2 border-gray-100 focus:border-purple-500 outline-none py-1.5 text-gray-700 text-sm font-medium transition-colors bg-transparent" placeholder="e.g., ground chicken, black beans, eggs...">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-500 uppercase flex items-center"><span class="mr-2 text-lg">🍠</span> Carbs</label>
+                                        <input type="text" id="ing-carbs" class="w-full border-b-2 border-gray-100 focus:border-purple-500 outline-none py-1.5 text-gray-700 text-sm font-medium transition-colors bg-transparent" placeholder="e.g., sweet potato, oats, wholewheat pasta...">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-500 uppercase flex items-center"><span class="mr-2 text-lg">🥦</span> Veggies & Fruits</label>
+                                        <input type="text" id="ing-veg" class="w-full border-b-2 border-gray-100 focus:border-purple-500 outline-none py-1.5 text-gray-700 text-sm font-medium transition-colors bg-transparent" placeholder="e.g., frozen peas, carrots, ripe banana...">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-500 uppercase flex items-center"><span class="mr-2 text-lg">🧀</span> Fats & Dairy</label>
+                                        <input type="text" id="ing-fats" class="w-full border-b-2 border-gray-100 focus:border-purple-500 outline-none py-1.5 text-gray-700 text-sm font-medium transition-colors bg-transparent" placeholder="e.g., cheddar cheese, avocado, whole milk...">
+                                    </div>
+                                </div>
+                                
+                                <!-- Common Ingredients Reference -->
+                                <div class="md:col-span-1 bg-white/60 border border-purple-200 rounded-xl p-5 shadow-sm">
+                                    <h4 class="text-xs font-extrabold text-purple-900 uppercase tracking-widest mb-3 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Common Staples
+                                    </h4>
+                                    <p class="text-xs text-gray-500 mb-3">Click to add to your lists.</p>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Proteins</p>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                <button onclick="appendIngredient('ing-proteins', 'Chicken')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 px-2 py-1 rounded transition-colors">Chicken</button>
+                                                <button onclick="appendIngredient('ing-proteins', 'Eggs')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 px-2 py-1 rounded transition-colors">Eggs</button>
+                                                <button onclick="appendIngredient('ing-proteins', 'Lentils')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 px-2 py-1 rounded transition-colors">Lentils</button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Carbs</p>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                <button onclick="appendIngredient('ing-carbs', 'Oats')" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-2 py-1 rounded transition-colors">Oats</button>
+                                                <button onclick="appendIngredient('ing-carbs', 'Sweet Potato')" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-2 py-1 rounded transition-colors">Sweet Potato</button>
+                                                <button onclick="appendIngredient('ing-carbs', 'Pasta')" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-2 py-1 rounded transition-colors">Pasta</button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Veggies/Fruit</p>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                <button onclick="appendIngredient('ing-veg', 'Banana')" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded transition-colors">Banana</button>
+                                                <button onclick="appendIngredient('ing-veg', 'Peas')" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded transition-colors">Peas</button>
+                                                <button onclick="appendIngredient('ing-veg', 'Zucchini')" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded transition-colors">Zucchini</button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Fats/Dairy</p>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                <button onclick="appendIngredient('ing-fats', 'Avocado')" class="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-2 py-1 rounded transition-colors">Avocado</button>
+                                                <button onclick="appendIngredient('ing-fats', 'Cheddar')" class="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-2 py-1 rounded transition-colors">Cheddar</button>
+                                                <button onclick="appendIngredient('ing-fats', 'Yogurt')" class="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-2 py-1 rounded transition-colors">Yogurt</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol id="gen-recipe-instructions" class="space-y-4 text-sm text-gray-700"></ol>
-                            <div class="mt-6 bg-purple-50 p-4 rounded-xl border-l-4 border-purple-500">
-                                <p class="text-purple-900 text-sm"><strong class="font-black">Toddler Tip:</strong> <span id="gen-recipe-tip"></span></p>
+                        
+                        <!-- QUICK MODE CONTROLS -->
+                        <div id="quick-controls" class="grid md:grid-cols-2 gap-8 mt-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Meal Type</label>
+                                    <select id="ai-meal-type" class="w-full rounded-xl border-2 border-purple-200 p-3 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700 bg-white">
+                                        <option value="Lunch/Dinner">Lunch or Dinner</option>
+                                        <option value="Breakfast">Breakfast</option>
+                                        <option value="Snack">Healthy Snack</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-purple-900 mb-2 uppercase tracking-wide">Count</label>
+                                    <select id="ai-recipe-count" class="w-full rounded-xl border-2 border-purple-200 p-3 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all text-gray-700 bg-white">
+                                        <option value="1">1 Recipe</option>
+                                        <option value="2">2 Recipes</option>
+                                        <option value="3" selected>3 Recipes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-col justify-end">
+                                <button id="btn-generate-quick" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0">
+                                    Generate Recipes
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PLANNER MODE CONTROLS -->
+                        <div id="planner-controls" class="hidden mt-4">
+                            <button id="btn-get-ideas" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0 mb-6">
+                                Get Daily Meal Ideas
+                            </button>
+                            
+                            <!-- Area where ideas are populated -->
+                            <div id="planner-ideas-area" class="hidden bg-white p-6 rounded-2xl border border-purple-200 shadow-sm mb-6">
+                                <h3 class="font-black text-xl text-purple-900 mb-1">Select your menu for the day:</h3>
+                                <p class="text-sm text-gray-500 font-medium mb-4">Choose up to 2 per category. Reroll individual meals if you don't like them!</p>
+                                
+                                <div class="max-h-[500px] overflow-y-auto pr-4 no-scrollbar space-y-6">
+                                    <!-- Breakfast Options -->
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 border-b pb-2 mb-3 sticky top-0 bg-white z-10 pt-2">☀️ Breakfast (Max 2)</h4>
+                                        <div id="ideas-breakfasts" class="space-y-3"></div>
+                                    </div>
+                                    <!-- Lunch Options -->
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 border-b pb-2 mb-3 sticky top-0 bg-white z-10 pt-2">🥪 Lunch/Dinner (Max 2)</h4>
+                                        <div id="ideas-lunches" class="space-y-3"></div>
+                                    </div>
+                                    <!-- Snack Options -->
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 border-b pb-2 mb-3 sticky top-0 bg-white z-10 pt-2">🍎 Snack (Max 2)</h4>
+                                        <div id="ideas-snacks" class="space-y-3"></div>
+                                    </div>
+                                </div>
+                                
+                                <button id="btn-generate-plan" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-black text-lg py-4 px-6 rounded-xl shadow-md transform transition-all hover:-translate-y-1 active:translate-y-0 mt-8 flex justify-center items-center">
+                                    Generate Full Day's Recipes!
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- General Form Error -->
+                        <div id="form-error" class="hidden mt-4 bg-red-50 text-red-600 font-bold p-3 rounded-lg border border-red-200 text-sm">
+                            Please fill out all required fields.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status & Loading Screens -->
+                <div id="ai-global-error" class="hidden mt-10 bg-red-50 rounded-2xl p-6 border border-red-200 text-center shadow-sm">
+                    <p class="text-red-800 font-bold text-lg mb-2">Oops! The AI Chef hit a snag.</p>
+                    <p class="text-red-600 font-medium font-mono text-sm bg-white p-3 rounded-lg border border-red-100 inline-block" id="ai-error-text">Details will appear here.</p>
+                </div>
+
+                <div id="ai-global-loading" class="hidden mt-10 bg-white rounded-3xl p-10 border border-purple-100 shadow-sm text-center">
+                    <svg class="animate-spin h-12 w-12 text-purple-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <h3 class="text-xl font-bold text-purple-900 mb-2">Consulting the BLW Chef...</h3>
+                    <p id="ai-loading-status" class="text-purple-600 font-medium text-sm mt-2">Checking available models...</p>
+                </div>
+
+                <!-- Save Inspired Day Banner (Injected dynamically) -->
+                <div id="save-inspired-day-banner" class="hidden mt-10 mb-6 bg-teal-50 p-6 rounded-2xl border-2 border-teal-200 flex-col md:flex-row justify-between items-center shadow-sm gap-4">
+                    <div>
+                        <h4 class="font-black text-teal-800 text-2xl flex items-center">
+                            <span class="text-3xl mr-3">🎉</span> Love this menu?
+                        </h4>
+                        <p class="text-sm text-teal-600 mt-1 font-bold">Group all these generated recipes into one easy-to-find "Inspired Day" in your Cookbook.</p>
+                    </div>
+                    <button onclick="saveInspiredDay()" class="bg-teal-500 hover:bg-teal-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-transform active:scale-95 whitespace-nowrap w-full md:w-auto">
+                        Save as "Inspired Day"
+                    </button>
+                </div>
+
+                <!-- CONTAINER FOR MULTIPLE GENERATED RECIPES -->
+                <div id="generated-recipes-container" class="hidden mt-4 space-y-12">
+                    <!-- Javascript will inject <article> cards here -->
+                </div>
+            </section>
+
+            <!-- PLANNING HUB -->
+            <section id="planning-hub" class="scroll-mt-10 bg-gray-50 rounded-3xl p-6 md:p-10 border border-gray-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center text-2xl mr-4 font-black">4</div>
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-gray-900">The Rotating Menu</h2>
+                            <p class="text-gray-500 font-medium">Toggle between weeks to see your groceries and recipes.</p>
+                        </div>
+                    </div>
+                    <div class="flex bg-white rounded-xl p-1 shadow-md border border-gray-300 w-full md:w-auto">
+                        <button onclick="toggleWeek(1)" id="btn-week-1" class="week-btn flex-1 px-8 py-3 rounded-lg font-bold text-sm transition-all bg-teal-600 text-white shadow-sm">Week 1 Menu</button>
+                        <button onclick="toggleWeek(2)" id="btn-week-2" class="week-btn flex-1 px-8 py-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-gray-50">Week 2 Menu</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WEEK 1 RECIPES -->
+            <div id="content-week-1" class="week-content block space-y-20">
+                <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">5</div><h2 class="text-3xl font-extrabold text-gray-800">Week 1 Recipes</h2></div>
+
+                <!-- R1 -->
+                <article id="recipe-1" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
+                    <img src="https://wooedbythefood.com/wp-content/uploads/2022/11/0013-TurkeyMeatballsHero-scaled.webp" alt="Meatballs" class="w-full h-64 object-cover object-center bg-gray-100">
+                    <div class="p-6 md:p-10">
+                        <h3 class="text-3xl font-extrabold text-gray-900 mb-2">1. Turkey/Beef Meatballs</h3>
+                        <div class="inline-flex items-center bg-rose-50 text-rose-700 font-bold text-sm px-4 py-2 rounded-full mb-6 border border-rose-100">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Prep: 15m | Cook: 20m
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
+                                <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
+                                <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground meat</li><li>• 1 Large egg</li><li>• 50g Breadcrumbs</li><li>• 120g Zucchini (dry)</li></ul>
+                            </div>
+                            <div class="col-span-2">
+                                <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
+                                <ol class="space-y-4 text-sm text-gray-700">
+                                    <li><strong class="text-rose-500">1. Prepare Zucchini:</strong> Grate the zucchini finely. Wring it out in a towel until bone-dry to prevent mushy textures.</li>
+                                    <li><strong class="text-rose-500">2. Combine Ingredients:</strong> Mix meat, egg, breadcrumbs, and zucchini gently. Do not overwork, allowing the meat to stay tender for experienced chompers.</li>
+                                    <li><strong class="text-rose-500">3. Portion & Roll:</strong> Roll into slightly larger 4cm balls. This size is perfect for advanced toddlers to practice stabbing effectively with a fork without the ball crumbling.</li>
+                                    <li><strong class="text-rose-500">4. Bake:</strong> Bake at 190°C (375°F) for 18-20 minutes until a firm outer crust develops for sensory feedback.</li>
+                                </ol>
                             </div>
                         </div>
                     </div>
-                </div>
-            </article>
-        </section>
-
-        <!-- PLANNING HUB -->
-        <section id="planning-hub" class="scroll-mt-10 bg-gray-50 rounded-3xl p-6 md:p-10 border border-gray-200">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center text-2xl mr-4 font-black">4</div>
-                    <div>
-                        <h2 class="text-3xl font-extrabold text-gray-900">The Rotating Menu</h2>
-                        <p class="text-gray-500 font-medium">Toggle between weeks to see your groceries and recipes.</p>
-                    </div>
-                </div>
-                <div class="flex bg-white rounded-xl p-1 shadow-md border border-gray-300 w-full md:w-auto">
-                    <button onclick="toggleWeek(1)" id="btn-week-1" class="week-btn flex-1 px-8 py-3 rounded-lg font-bold text-sm transition-all bg-teal-600 text-white shadow-sm">Week 1 Menu</button>
-                    <button onclick="toggleWeek(2)" id="btn-week-2" class="week-btn flex-1 px-8 py-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-gray-50">Week 2 Menu</button>
-                </div>
+                </article>
+                <article id="recipe-2" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">2. Salmon Fish Fingers</h3></div></article>
+                <article id="recipe-3" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">3. Black Bean Quesadillas</h3></div></article>
+                <article id="recipe-4" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">4. Lentil Sweet Potato Cups</h3></div></article>
+                <article id="recipe-5" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">5. Chicken & Veggie Fritters</h3></div></article>
+                <article id="recipe-6" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">6. Loaded Pita Pizza</h3></div></article>
+                <article id="recipe-7" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">7. Mild Coconut Chicken Curry</h3></div></article>
             </div>
-        </section>
 
-        <!-- WEEK 1 RECIPES -->
-        <div id="content-week-1" class="week-content block space-y-20">
-            <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">5</div><h2 class="text-3xl font-extrabold text-gray-800">Week 1 Recipes</h2></div>
-
-            <!-- R1 -->
-            <article id="recipe-1" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://wooedbythefood.com/wp-content/uploads/2022/11/0013-TurkeyMeatballsHero-scaled.webp" alt="Meatballs" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">1. Turkey/Beef Meatballs</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground meat</li><li>• 1 Large egg</li><li>• 50g Breadcrumbs</li><li>• 120g Zucchini (dry)</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Prepare Zucchini:</strong> Grate the zucchini finely. Place it in a clean kitchen towel and wring it out with as much force as possible. It must be bone-dry to prevent the meatballs from becoming mushy.</li>
-                                <li><strong class="text-rose-500">2. Combine Ingredients:</strong> In a large mixing bowl, combine the ground meat, egg, breadcrumbs, and the dried zucchini. Use your hands to gently mix until just combined—do not overwork the meat or it will become tough for little jaws.</li>
-                                <li><strong class="text-rose-500">3. Portion & Roll:</strong> Scoop approximately 1 tablespoon of mixture and roll into 3cm balls. This size is perfect for "micro-portions" and easy for a toddler to pick up.</li>
-                                <li><strong class="text-rose-500">4. Bake:</strong> Arrange on a parchment-lined tray. Bake at 190°C (375°F) for 18-20 minutes. Ensure the internal temperature reaches 74°C (165°F).</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R2 -->
-            <article id="recipe-2" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://www.mummycooks.com/cdn/shop/articles/Baked_Salmon_Fingers_Low_Res-4.jpg" alt="Salmon Fingers" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">2. Salmon Fish Fingers</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 300g Salmon Fillet</li><li>• 1 Egg</li><li>• 30g Flour</li><li>• 60g Panko Breadcrumbs</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Slice the Salmon:</strong> Remove any skin and carefully feel for bones. Slice the salmon into fingers roughly 2cm wide and 6cm long. This "finger" shape is easiest for a 20-month-old's palmar grasp.</li>
-                                <li><strong class="text-rose-500">2. Set Up Station:</strong> Prepare three shallow bowls: one with flour, one with the beaten egg, and one with panko.</li>
-                                <li><strong class="text-rose-500">3. Bread the Fish:</strong> Dip each piece into flour (shake off excess), then egg, then roll in panko until fully coated. Press the panko in firmly so it stays crunchy.</li>
-                                <li><strong class="text-rose-500">4. Bake:</strong> Place on a baking sheet and lightly spray with olive oil. Bake at 200°C (400°F) for 12-15 minutes until the salmon flakes easily and the coating is golden.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
+            <!-- WEEK 2 RECIPES -->
+            <div id="content-week-2" class="week-content hidden space-y-20">
+                <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">6</div><h2 class="text-3xl font-extrabold text-gray-800">Week 2 Recipes</h2></div>
+                <article id="recipe-8" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">8. Chunky Meatloaf Slices</h3></div></article>
+                <article id="recipe-9" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">9. Pesto Pea Spirals</h3></div></article>
+                <article id="recipe-10" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">10. White Bean Patties</h3></div></article>
+                <article id="recipe-11" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">11. Hidden Veggie Mac</h3></div></article>
+                <article id="recipe-12" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">12. DIY Spoon Tacos</h3></div></article>
+                <article id="recipe-13" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">13. Banana Oat Pancakes</h3></div></article>
+                <article id="recipe-14" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden"><div class="p-6 md:p-10"><h3 class="text-3xl font-extrabold text-gray-900 mb-2">14. Tomato Soup & Cheese Squares</h3></div></article>
+            </div>
             
-            <!-- R3 -->
-            <article id="recipe-3" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://spicecravings.com/wp-content/uploads/2019/10/Bean-Quesadilla-6.jpg" alt="Quesadilla" class="w-full h-64 object-cover object-center bg-gray-100" onerror="this.src='https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?auto=format&fit=crop&w=800&q=80'">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">3. Black Bean Quesadillas</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Flour Tortilla</li><li>• 50g Canned Black beans (rinsed)</li><li>• 30g Mild Cheddar</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Safety Smash:</strong> Whole beans can be a choking hazard. Place rinsed beans on a plate and smash them flat with the back of a fork. This also helps them stick inside the tortilla!</li>
-                                <li><strong class="text-rose-500">2. Layering:</strong> Spread the smashed beans over half of the tortilla. Sprinkle the cheese evenly over the beans. Fold the tortilla in half.</li>
-                                <li><strong class="text-rose-500">3. Toasting:</strong> Heat a non-stick skillet over medium-low heat. Toast the quesadilla for 2 minutes per side until the cheese is melted and acts as a "glue" for the beans.</li>
-                                <li><strong class="text-rose-500">4. Slice:</strong> Let it cool for 3 minutes (molten cheese is a burn risk). Slice into thin triangles or strips.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R4 -->
-            <article id="recipe-4" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://www.evolvingtable.com/wp-content/uploads/2025/02/Mini-Shepherds-Pies-24.jpg" alt="Lentil Cups" class="w-full h-64 object-cover object-center bg-gray-100" onerror="this.src='https://images.unsplash.com/photo-1548943487-a2e4e43b4859?auto=format&fit=crop&w=800&q=80'">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">4. Lentil Sweet Potato Cups</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Cooked lentils</li><li>• 100g Onion/Carrot (minced)</li><li>• 400g Sweet Potato (boiled)</li><li>• 50ml Vegetable Broth</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Sauté the Base:</strong> In a pan with a splash of oil, cook the finely minced onions and carrots until very soft (about 8 minutes). Texture is key—crunchy onions are often rejected at this age.</li>
-                                <li><strong class="text-rose-500">2. Combine & Simmer:</strong> Stir in the cooked lentils and broth. Simmer on low heat until the liquid is mostly gone and the mixture is thick and scoopable.</li>
-                                <li><strong class="text-rose-500">3. Prepare the Mash:</strong> Mash the boiled sweet potatoes until completely smooth. Add a tiny bit of butter or olive oil if needed for a silky texture.</li>
-                                <li><strong class="text-rose-500">4. Assemble & Bake:</strong> Grease a muffin tin. Fill each cup 2/3 with the lentil mixture. Spoon the sweet potato mash on top. Bake at 180°C (350°F) for 15 minutes to set. These are great for practicing with a fork!</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R5 -->
-            <article id="recipe-5" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://www.yummytoddlerfood.com/wp-content/uploads/2024/08/Chicken-Fritters-6-horiz.jpg" alt="Chicken Fritters" class="w-full h-64 object-cover object-center bg-gray-100" onerror="this.src='https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80'">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">5. Chicken & Veggie Fritters</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 150g Shredded chicken</li><li>• 120g Zucchini (dry)</li><li>• 1 Large egg</li><li>• 40g Flour</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Prep the Chicken:</strong> Ensure the chicken is finely shredded or chopped into tiny bits. Long strands can be hard for toddlers to manage.</li>
-                                <li><strong class="text-rose-500">2. Create the Batter:</strong> In a bowl, whisk the egg. Add the shredded chicken, bone-dry zucchini, and flour. Mix until you have a thick, sticky batter. Let it sit for 2 minutes to allow the flour to hydrate.</li>
-                                <li><strong class="text-rose-500">3. Pan-Fry:</strong> Heat a lightly oiled skillet over medium heat. Drop heaping tablespoons of batter into the pan and flatten them into discs with a spatula.</li>
-                                <li><strong class="text-rose-500">4. Cook:</strong> Fry for 3-4 minutes per side until golden brown and cooked through. Serve with a dollop of Greek yogurt as a "dip" to encourage interaction.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R6 -->
-            <article id="recipe-6" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" alt="Homemade Pizza Strips" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">6. Homemade Pizza Strips</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 2 Whole-wheat Pitas</li><li>• 4 tbsp Low-sodium sauce</li><li>• 50g Mozzarella</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Base Prep:</strong> Using pita bread instead of dough makes for a thinner, easier-to-chew crust. Spread a thin layer of sauce on the pita, leaving a small border for the "crust."</li>
-                                <li><strong class="text-rose-500">2. Cheese & Veggie:</strong> Sprinkle mozzarella evenly. If you have extra finely grated carrots or spinach, you can hide them under the cheese here.</li>
-                                <li><strong class="text-rose-500">3. Bake:</strong> Bake at 200°C (400°F) for 8-10 minutes until the cheese is bubbling and just starting to brown.</li>
-                                <li><strong class="text-rose-500">4. Final Cut:</strong> Let cool completely. Use a pizza cutter to slice the rounds into 2cm wide rectangles (strips). These "fries" shapes are much more toddler-friendly than traditional wedges.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R7 -->
-            <article id="recipe-7" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://kidgredients.com.au/wp-content/uploads/2021/06/Chicken-and-Coconut-Curry-with-Sweet-Potato-post-10.jpg" alt="Coconut Curry" class="w-full h-64 object-cover object-center bg-gray-100" onerror="this.src='https://images.unsplash.com/photo-1565557612668-da951919d3ee?auto=format&fit=crop&w=800&q=80'">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">7. Mild Coconut Chicken Curry</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-gray-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 450g Chicken (1cm cubes)</li><li>• 400ml Full-fat coconut milk</li><li>• 1 tbsp Mild curry powder</li><li>• 200g Sweet potato (diced)</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-rose-500">1. Searing:</strong> Dice the chicken into very small, uniform cubes (1cm). In a deep pan, brown the chicken slightly in olive oil. Add the mild curry powder and stir for 30 seconds until fragrant.</li>
-                                <li><strong class="text-rose-500">2. Liquid & Veg:</strong> Pour in the coconut milk and add the diced sweet potatoes. Ensure the potatoes are also cut small so they soften quickly.</li>
-                                <li><strong class="text-rose-500">3. Simmer:</strong> Bring to a gentle boil, then reduce heat to low. Simmer for 20-25 minutes until the chicken is tender and potatoes are soft.</li>
-                                <li><strong class="text-rose-500">4. Thicken & Serve:</strong> Use a fork to mash some of the sweet potatoes directly into the sauce. This naturally thickens the curry, making it cling to a spoon better for "spoon practice."</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
-
-        <!-- WEEK 2 RECIPES -->
-        <div id="content-week-2" class="week-content hidden space-y-20">
-            <div class="flex items-center mb-8 pt-10"><div class="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center text-2xl mr-4 font-black">6</div><h2 class="text-3xl font-extrabold text-gray-800">Week 2 Recipes</h2></div>
-
-            <!-- R8 -->
-            <article id="recipe-8" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1627913385736-224db3da0471?auto=format&fit=crop&w=800&q=80" alt="Meatloaf Muffins" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">8. Mini Meatloaf Muffins</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 500g Ground Beef</li><li>• 1 Grated Apple & Carrot</li><li>• 1 Egg</li><li>• 40g Rolled Oats</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. The Grate Secret:</strong> Fine-grate the apple and carrot. The apple provides natural sweetness and incredible moisture, ensuring the meatloaf isn't dry or crumbly for the toddler.</li>
-                                <li><strong class="text-indigo-500">2. Mix:</strong> Combine the beef, grated veg/fruit, egg, and oats. Oats are used here instead of breadcrumbs for extra fiber and a softer final texture.</li>
-                                <li><strong class="text-indigo-500">3. Shape:</strong> Press the mixture into a greased muffin tin. Fill them to the top; they will shrink slightly as they cook.</li>
-                                <li><strong class="text-indigo-500">4. Bake:</strong> Bake at 190°C (375°F) for 20-25 minutes. Let them sit for 5 minutes before removing. Serve as "micro-portions" to avoid overwhelming the plate.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R9 -->
-            <article id="recipe-9" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=800&q=80" alt="Pesto Pasta" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">9. Pesto Pea Spirals</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Fusilli Pasta</li><li>• 100g Frozen Peas</li><li>• 2 tbsp Basil Pesto</li><li>• 1 tbsp Greek Yogurt</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Boil:</strong> Cook the fusilli in boiling water. For 20-month olds, cook it 1-2 minutes *past* the al dente stage to ensure it's soft enough for their molars.</li>
-                                <li><strong class="text-indigo-500">2. Add Peas:</strong> Throw the frozen peas into the pasta water during the last 2-3 minutes of cooking. Drain everything together.</li>
-                                <li><strong class="text-indigo-500">3. The Creamy Sauce:</strong> In a small bowl, whisk the pesto with the Greek yogurt. This adds protein and tempers the strong flavor of the pesto, making it more palatable for toddlers.</li>
-                                <li><strong class="text-indigo-500">4. Toss:</strong> Mix the pasta, peas, and sauce. The spirals are excellent for "fork practice" as they are easy to stab!</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R10 -->
-            <article id="recipe-10" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1505253668822-42074d58a7c6?auto=format&fit=crop&w=800&q=80" alt="Bean Patties" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">10. White Bean & Spinach Patties</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Can White Beans</li><li>• 1 Handful Spinach (chopped)</li><li>• 1 Egg</li><li>• 40g Breadcrumbs</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Mash the Beans:</strong> Drain and rinse the beans. Place them in a bowl and mash them with a fork until mostly smooth but with a few small chunks for texture.</li>
-                                <li><strong class="text-indigo-500">2. Fold in Greens:</strong> Finely chop the fresh spinach (steam it briefly first if your toddler is picky about raw greens). Mix the spinach, egg, and breadcrumbs into the beans.</li>
-                                <li><strong class="text-indigo-500">3. Chill:</strong> If you have time, chill the mixture for 10 minutes. This makes the patties easier to handle. Form into small, toddler-sized patties.</li>
-                                <li><strong class="text-indigo-500">4. Cook:</strong> Pan-fry in a little oil for 3-4 minutes per side until a crust forms. These are high in iron—pair with a slice of orange for vitamin C absorption!</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R11 -->
-            <article id="recipe-11" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?auto=format&fit=crop&w=800&q=80" alt="Mac and Cheese" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">11. Hidden Veggie Mac & Cheese</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 200g Macaroni</li><li>• 150g Squash/Pumpkin Puree</li><li>• 100g Grated Cheddar</li><li>• 50ml Milk</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Boil:</strong> Cook the macaroni until very soft. Drain, but reserve a small amount of the pasta water.</li>
-                                <li><strong class="text-indigo-500">2. Create the "Gold" Sauce:</strong> In the same warm pot, combine the squash puree, grated cheddar, and milk. Stir over low heat until the cheese melts and blends into a vibrant orange, silky sauce.</li>
-                                <li><strong class="text-indigo-500">3. Combine:</strong> Return the pasta to the pot and toss to coat. If it's too thick, add a splash of the reserved pasta water.</li>
-                                <li><strong class="text-indigo-500">4. Serve:</strong> Serve in a muffin tin (Snackcuterie style) with peas or diced carrots in the other compartments to keep things interactive.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R12 -->
-            <article id="recipe-12" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=800&q=80" alt="Tacos" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">12. Deconstructed Tacos</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• Ground Beef (cooked)</li><li>• Black Beans (smashed)</li><li>• Mild Cheese</li><li>• Whole Wheat Tortilla</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Prep Ingredients:</strong> Ensure the beef is crumbled into very small pieces. Smash the black beans with a fork.</li>
-                                <li><strong class="text-indigo-500">2. Soften the Tortilla:</strong> Warm the tortilla briefly so it's soft, then use a pizza cutter to slice it into long, 1cm wide "ribbons."</li>
-                                <li><strong class="text-indigo-500">3. Plate Construction:</strong> Do not build the taco. Place the beef, the bean mash, the cheese, and the tortilla strips in separate piles on a divided plate.</li>
-                                <li><strong class="text-indigo-500">4. Interactive Eating:</strong> This "deconstructed" style reduces overwhelm and lets the toddler explore each texture individually—perfect for the "Control Freak Phase."</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R13 -->
-            <article id="recipe-13" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1528207776546-384111d0f1c2?auto=format&fit=crop&w=800&q=80" alt="Pancakes" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">13. Banana Oat Pancakes</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• 1 Very Ripe Banana</li><li>• 1 Large Egg</li><li>• 40g Rolled Oats (blitzed)</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Blend to Smooth:</strong> Place the banana, egg, and oats in a blender. Blitz until completely smooth. Using oats instead of flour creates a much softer pancake that is safer for early chewers.</li>
-                                <li><strong class="text-indigo-500">2. Low & Slow:</strong> Heat a non-stick pan over medium-low heat with a tiny bit of butter. These pancakes have no flour, so they burn easily if the heat is too high.</li>
-                                <li><strong class="text-indigo-500">3. Pouring:</strong> Pour small, "dollar-sized" circles (about 5cm wide). This makes them easier for small hands to pick up.</li>
-                                <li><strong class="text-indigo-500">4. The Flip:</strong> Wait for small bubbles to form on the surface, then gently flip. Cook for 1 more minute. Serve with a "dip" of Greek yogurt.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- R14 -->
-            <article id="recipe-14" class="scroll-mt-10 bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden mb-12">
-                <img src="https://images.unsplash.com/photo-1606850780554-b55ea4fa0bc7?auto=format&fit=crop&w=800&q=80" alt="Tomato Soup" class="w-full h-64 object-cover object-center bg-gray-100">
-                <div class="p-6 md:p-10">
-                    <h3 class="text-3xl font-extrabold text-gray-900 mb-6">14. Tomato Soup & Cheese Strips</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="col-span-1 bg-indigo-50 p-6 rounded-2xl h-fit">
-                            <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Ingredients</h4>
-                            <ul class="space-y-2 text-sm text-gray-600 font-medium"><li>• Low-Sodium Tomato Soup</li><li>• 1 slice Bread</li><li>• 1 slice Cheddar</li></ul>
-                        </div>
-                        <div class="col-span-2">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
-                            <ol class="space-y-4 text-sm text-gray-700">
-                                <li><strong class="text-indigo-500">1. Soup Temp:</strong> Warm the tomato soup until it is just above room temperature. Never serve "hot" to a toddler. If it's too thin, stir in a spoonful of yogurt to make it more nutrient-dense.</li>
-                                <li><strong class="text-indigo-500">2. Grilled Cheese:</strong> Make a simple grilled cheese sandwich. Use a tiny bit of butter and keep the crusts soft.</li>
-                                <li><strong class="text-indigo-500">3. Soldiers:</strong> Use a knife to cut the sandwich into long "soldiers" (strips about 1.5cm wide).</li>
-                                <li><strong class="text-indigo-500">4. Interaction:</strong> Demonstrate the "dunking" action. This provides a "job" for the toddler and makes the meal interactive rather than a chore.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
-
-        <section class="bg-gray-800 text-white rounded-3xl p-8 md:p-12 mt-20 mb-20">
-            <h2 class="text-2xl font-extrabold text-white mb-8 text-center">Final Prep & Nutrition Hacks</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-gray-700 p-5 rounded-2xl border border-gray-600">
-                    <h3 class="font-bold text-orange-400 mb-2">The Dry Zucchini Rule</h3>
-                    <p class="text-gray-300 text-sm">Grate it, wring it out until dry to prevent mushy meatballs.</p>
-                </div>
-                <div class="bg-gray-700 p-5 rounded-2xl border border-gray-600">
-                    <h3 class="font-bold text-orange-400 mb-2">The Freezer Secret</h3>
-                    <p class="text-gray-300 text-sm">Freeze items flat on a tray for 2 hours *before* bagging.</p>
-                </div>
-                <div class="bg-gray-700 p-5 rounded-2xl border border-gray-600">
-                    <h3 class="font-bold text-orange-400 mb-2">The Iron Combo</h3>
-                    <p class="text-gray-300 text-sm">Pair plant iron (lentils) with Vit C (berries) for absorption.</p>
-                </div>
-            </div>
-            <div class="text-center mt-12 pt-8 border-t border-gray-600">
+            <div class="text-center pb-20">
                 <h3 class="text-3xl font-black text-rose-400 mb-2">Bon Appétit!</h3>
             </div>
-        </section>
+        </div>
+    </div>
+
+    <!-- SAVED RECIPES VIEW -->
+    <div id="saved-view" class="hidden">
+        <div class="bg-gradient-to-br from-yellow-400 to-orange-400 text-white p-10 md:p-20 text-center">
+            <h1 class="text-4xl md:text-6xl font-black mb-4">My Cookbook</h1>
+            <p class="text-xl md:text-2xl font-semibold opacity-90">All your magically generated saved recipes!</p>
+        </div>
+        <div class="max-w-5xl mx-auto p-6 md:p-10 space-y-8 pb-32"> <!-- Extra PB for the fixed bottom bar -->
+            
+            <!-- Category Filters -->
+            <div class="flex flex-col justify-center items-center gap-4 mb-4">
+                
+                <!-- Main Recipe Type Filters -->
+                <div class="flex flex-wrap justify-center gap-2 bg-gray-100 p-1.5 rounded-xl w-fit">
+                    <button onclick="filterSaved('All')" id="filter-All" class="filter-btn bg-yellow-500 text-white shadow-md px-5 py-2 rounded-lg font-bold transition-all text-sm">All</button>
+                    <button onclick="filterSaved('Breakfast')" id="filter-Breakfast" class="filter-btn bg-transparent text-gray-600 hover:bg-gray-200 px-5 py-2 rounded-lg font-bold transition-all text-sm">Breakfast</button>
+                    <button onclick="filterSaved('Lunch/Dinner')" id="filter-LunchDinner" class="filter-btn bg-transparent text-gray-600 hover:bg-gray-200 px-5 py-2 rounded-lg font-bold transition-all text-sm">Lunch/Dinner</button>
+                    <button onclick="filterSaved('Snack')" id="filter-Snack" class="filter-btn bg-transparent text-gray-600 hover:bg-gray-200 px-5 py-2 rounded-lg font-bold transition-all text-sm">Snacks</button>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-3 w-full">
+                    <!-- Day Groups Filters -->
+                    <button onclick="filterSaved('InspiredDays')" id="filter-InspiredDays" class="filter-btn border-2 border-teal-200 text-teal-600 hover:bg-teal-50 px-6 py-2.5 rounded-xl font-bold transition-all text-sm bg-white shadow-sm flex items-center">
+                        <span class="mr-2 text-lg">💡</span> Inspired Days
+                    </button>
+                    <button onclick="filterSaved('MyDays')" id="filter-MyDays" class="filter-btn border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-6 py-2.5 rounded-xl font-bold transition-all text-sm bg-white shadow-sm flex items-center">
+                        <span class="mr-2 text-lg">📅</span> My Days
+                    </button>
+                    <div class="w-[2px] bg-gray-200 h-10 mx-2 hidden md:block"></div>
+                    <!-- Favorites Toggle -->
+                    <button onclick="toggleFavoritesFilter()" id="toggle-fav-filter" class="flex items-center bg-white text-gray-400 hover:text-rose-500 border-2 border-gray-200 px-6 py-2.5 rounded-xl font-bold transition-all text-sm shadow-sm">
+                        <span class="text-xl mr-2 icon">🤍</span> Favorites Only
+                    </button>
+                </div>
+
+                <!-- Create Day Button -->
+                <div class="w-full border-t border-gray-200 mt-2 pt-6 flex justify-center" id="combine-trigger-container">
+                    <button onclick="toggleCombineMode()" class="bg-teal-50 hover:bg-teal-100 border-2 border-teal-500 text-teal-700 font-black py-3 px-8 rounded-xl shadow-sm transition-transform active:scale-95 flex items-center text-lg">
+                        <span class="text-2xl mr-3">🧩</span> Combine Recipes into "My Day"
+                    </button>
+                </div>
+            </div>
+
+            <div id="saved-recipes-container" class="space-y-12">
+                <!-- Javascript will inject categorized saved recipes here -->
+            </div>
+        </div>
     </div>
 </main>
 
 <script>
-    // Robust Fetch with built-in Error Parsing
+    // --- UTILS & FETCH LOGIC ---
     async function fetchWithRetry(url, options) {
         const delays = [1000, 2000, 4000, 8000, 16000];
         for (let i = 0; i < delays.length; i++) {
             try {
                 const response = await fetch(url, options);
                 if (!response.ok) {
-                    // Try to extract the exact error from Google's API
                     const errorData = await response.json().catch(() => ({}));
                     const errorMessage = errorData?.error?.message || `HTTP Error: ${response.status}`;
                     throw new Error(errorMessage);
@@ -599,19 +563,64 @@
         }
     }
 
-    // Mobile Navigation logic
+    async function getActiveModels(apiKey) {
+        let textModel = "models/gemini-2.5-flash-preview-09-2025";
+        let imageModel = "models/imagen-4.0-generate-001";
+        try {
+            const modelsResponse = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { method: 'GET' });
+            if (modelsResponse && modelsResponse.models) {
+                const textModels = modelsResponse.models.filter(m => m.supportedGenerationMethods?.includes('generateContent') && m.name.includes('gemini'));
+                const imgModels = modelsResponse.models.filter(m => m.name.includes('imagen'));
+                
+                const preferredText = textModels.find(m => m.name.includes('gemini-2.5-flash-preview-09-2025')) || textModels.find(m => m.name.includes('gemini-1.5-flash')) || textModels[0];
+                if (preferredText) textModel = preferredText.name;
+
+                const preferredImg = imgModels.find(m => m.name.includes('imagen-4.0')) || imgModels.find(m => m.name.includes('imagen-3.0')) || imgModels[0];
+                if (preferredImg) imageModel = preferredImg.name;
+            }
+        } catch (e) {
+            console.warn("Model fetch failed, defaulting to standard fallbacks.", e);
+        }
+        return { textModel, imageModel };
+    }
+
+    // --- INGREDIENTS AGGREGATOR & UI ---
+    function getIngredients() {
+        const p = document.getElementById('ing-proteins').value.trim();
+        const c = document.getElementById('ing-carbs').value.trim();
+        const v = document.getElementById('ing-veg').value.trim();
+        const f = document.getElementById('ing-fats').value.trim();
+        
+        const parts = [];
+        if(p) parts.push(`Proteins: ${p}`);
+        if(c) parts.push(`Carbs: ${c}`);
+        if(v) parts.push(`Veggies/Fruits: ${v}`);
+        if(f) parts.push(`Fats/Dairy: ${f}`);
+        
+        return parts.join(' | ') || "any baby-safe ingredients";
+    }
+
+    function appendIngredient(inputId, value) {
+        const input = document.getElementById(inputId);
+        if (input.value.length > 0 && !input.value.endsWith(', ')) {
+            input.value += ', ' + value;
+        } else {
+            input.value += value;
+        }
+        // Small visual feedback on the button
+        event.target.classList.add('opacity-50', 'scale-95');
+        setTimeout(() => event.target.classList.remove('opacity-50', 'scale-95'), 150);
+    }
+
+    // --- NAVIGATION LOGIC ---
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
 
     function toggleWeek(weekNum) {
-        document.querySelectorAll('.week-content').forEach(el => {
-            el.classList.add('hidden'); el.classList.remove('block');
-        });
+        document.querySelectorAll('.week-content').forEach(el => { el.classList.add('hidden'); el.classList.remove('block'); });
         const targetContent = document.getElementById(`content-week-${weekNum}`);
-        if (targetContent) {
-            targetContent.classList.remove('hidden'); targetContent.classList.add('block');
-        }
+        if (targetContent) { targetContent.classList.remove('hidden'); targetContent.classList.add('block'); }
         document.querySelectorAll('.week-btn').forEach(btn => {
             btn.classList.remove('bg-teal-600', 'text-white', 'bg-indigo-600', 'shadow-sm');
             btn.classList.add('text-gray-500');
@@ -622,158 +631,905 @@
         else activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
     }
 
-    // AI Generation Logic
-    const btnGenerate = document.getElementById('btn-generate-recipe');
-    btnGenerate.addEventListener('click', async () => {
-        
-        // 1. Get User Inputs
-        const ingredients = document.getElementById('ai-ingredients').value.trim();
-        const mealType = document.getElementById('ai-meal-type').value;
-        const userApiKey = document.getElementById('user-api-key').value.trim();
-        
-        // 2. Validate Inputs
-        const formError = document.getElementById('form-error');
-        formError.classList.add('hidden');
-
-        if (!userApiKey || !ingredients) {
-            formError.textContent = !userApiKey ? "Error: Please paste your Gemini API Key!" : "Error: Please type in some ingredients!";
-            formError.classList.remove('hidden');
-            return;
-        }
-
-        // 3. Setup UI States
-        const recipeCard = document.getElementById('generated-recipe-card');
-        const globalLoading = document.getElementById('ai-global-loading');
-        const loadingStatusText = document.getElementById('ai-loading-status');
-        const globalError = document.getElementById('ai-global-error');
-        const imgLoading = document.getElementById('gen-image-loading');
-        const generatedImg = document.getElementById('gen-recipe-image');
-        
-        recipeCard.classList.add('hidden');
-        globalError.classList.add('hidden');
-        globalLoading.classList.remove('hidden');
-        loadingStatusText.textContent = "Checking available AI models...";
-        
-        imgLoading.classList.remove('hidden');
-        imgLoading.classList.add('flex');
-        generatedImg.classList.add('hidden');
-        
-        btnGenerate.disabled = true;
-        btnGenerate.classList.add('opacity-50', 'cursor-not-allowed');
-
-        try {
-            // --- STEP 1: Dynamically Fetch Available Models ---
-            // Because free API keys and different accounts have access to different models,
-            // we ask the API what we are allowed to use to prevent version mismatches.
-            let activeTextModel = "models/gemini-1.5-flash"; // safe fallback
-            let activeImageModel = "models/imagen-3.0-generate-001"; // safe fallback
-
-            try {
-                const modelsResponse = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models?key=${userApiKey}`, { method: 'GET' });
-                if (modelsResponse && modelsResponse.models) {
-                    const textModels = modelsResponse.models.filter(m => m.supportedGenerationMethods?.includes('generateContent') && m.name.includes('gemini'));
-                    const imgModels = modelsResponse.models.filter(m => m.name.includes('imagen'));
-                    
-                    // Prefer the fastest/newest standard models available to the user
-                    const preferredText = textModels.find(m => m.name.includes('gemini-1.5-flash')) || textModels.find(m => m.name.includes('gemini-2.5-flash')) || textModels[0];
-                    if (preferredText) activeTextModel = preferredText.name;
-
-                    const preferredImg = imgModels.find(m => m.name.includes('imagen-3.0')) || imgModels.find(m => m.name.includes('imagen-4.0')) || imgModels[0];
-                    if (preferredImg) activeImageModel = preferredImg.name;
-                }
-            } catch (e) {
-                console.warn("Failed to fetch models list, defaulting to standard 1.5-flash fallback.", e);
-            }
-
-            loadingStatusText.textContent = `Generating Recipe with ${activeTextModel.split('/')[1]}...`;
-
-            // --- STEP 2: Text Generation (The Recipe) ---
-            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${activeTextModel}:generateContent?key=${userApiKey}`;
-            const textPayload = {
-                contents: [{ parts: [{ text: `Create a ${mealType} recipe using: ${ingredients}. Keep it safe for 20-month olds.` }] }],
-                systemInstruction: { parts: [{ text: "You are a toddler nutritionist. Create safe recipes." }] },
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "OBJECT",
-                        properties: {
-                            title: { type: "STRING" },
-                            ingredients: { type: "ARRAY", items: { type: "STRING" } },
-                            instructions: { type: "ARRAY", items: { type: "STRING" } },
-                            toddler_tip: { type: "STRING" },
-                            image_prompt: { type: "STRING", description: "Prompt for food photography of this dish on a child's plate." }
-                        },
-                        required: ["title", "ingredients", "instructions", "toddler_tip", "image_prompt"]
-                    }
-                }
-            };
-
-            const textResult = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
-            
-            // Extract the generated JSON payload
-            const recipeData = JSON.parse(textResult.candidates[0].content.parts[0].text);
-
-            // Populate Text HTML
-            document.getElementById('gen-recipe-title').textContent = recipeData.title;
-            document.getElementById('gen-recipe-tip').textContent = recipeData.toddler_tip;
-            const ingUl = document.getElementById('gen-recipe-ingredients'); ingUl.innerHTML = '';
-            recipeData.ingredients.forEach(ing => ingUl.innerHTML += `<li>• ${ing}</li>`);
-            const instOl = document.getElementById('gen-recipe-instructions'); instOl.innerHTML = '';
-            recipeData.instructions.forEach((inst, i) => instOl.innerHTML += `<li><strong class="text-purple-600">${i + 1}.</strong> ${inst}</li>`);
-
-            // Show the recipe card, hide global loading
-            globalLoading.classList.add('hidden');
-            recipeCard.classList.remove('hidden');
-
-            // --- STEP 3: Image Generation (The Photo) ---
-            document.getElementById('img-loading-text').textContent = `Plating with ${activeImageModel.split('/')[1]}...`;
-
-            const imgUrl = `https://generativelanguage.googleapis.com/v1beta/${activeImageModel}:predict?key=${userApiKey}`;
-            const imgPayload = { instances: { prompt: recipeData.image_prompt }, parameters: { sampleCount: 1 } };
-            
-            const imgResult = await fetchWithRetry(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) });
-            
-            if (imgResult.predictions && imgResult.predictions[0]) {
-                generatedImg.src = `data:image/png;base64,${imgResult.predictions[0].bytesBase64Encoded}`;
-                imgLoading.classList.add('hidden');
-                imgLoading.classList.remove('flex');
-                generatedImg.classList.remove('hidden');
-            } else {
-                throw new Error("API succeeded, but no image was returned.");
-            }
-
-        } catch (error) {
-            console.error("Recipe Generation Error:", error);
-            
-            // If the recipe card hasn't shown yet (meaning Text Generation failed)
-            if (recipeCard.classList.contains('hidden')) {
-                globalLoading.classList.add('hidden');
-                globalError.classList.remove('hidden');
-                document.getElementById('ai-error-text').textContent = error.message;
-            } else {
-                // If the text worked, but the IMAGE failed
-                imgLoading.innerHTML = `<div class="bg-red-50 p-4 rounded-xl border border-red-200 text-center"><p class="text-red-800 font-bold text-sm">Image generation failed.</p><p class="text-red-600 text-xs mt-1 font-mono">${error.message}</p></div>`;
-            }
-
-        } finally {
-            // Always turn the button back on
-            btnGenerate.disabled = false;
-            btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-    });
-
-    // Handle internal navigation linking
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            const targetId = link.getAttribute('href').substring(1);
-            if (targetId.startsWith('recipe-')) {
-                const num = parseInt(targetId.split('-')[1]);
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#recipe-')) {
+                const num = parseInt(href.split('-')[1]);
                 num >= 8 ? toggleWeek(2) : toggleWeek(1);
             }
             if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
         });
     });
+
+    function showHome() {
+        document.getElementById('home-view').classList.remove('hidden');
+        document.getElementById('saved-view').classList.add('hidden');
+        document.getElementById('main-content').scrollTop = 0;
+        if(isCombineMode) cancelCombine();
+    }
+
+    function showSaved() {
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('saved-view').classList.remove('hidden');
+        document.getElementById('main-content').scrollTop = 0;
+        renderSavedRecipes();
+    }
+
+    // --- AI MODE SWITCHING ---
+    let currentAIMode = 'quick';
+    window.switchAIMode = function(mode) {
+        currentAIMode = mode;
+        const quickBtn = document.getElementById('mode-quick-btn');
+        const planBtn = document.getElementById('mode-planner-btn');
+        const banner = document.getElementById('save-inspired-day-banner');
+        
+        if(mode === 'quick') {
+            quickBtn.className = "px-5 py-2.5 bg-white text-purple-700 font-black rounded-lg shadow-sm text-sm transition-all";
+            planBtn.className = "px-5 py-2.5 text-purple-600 hover:text-purple-800 hover:bg-purple-100/50 font-bold rounded-lg text-sm transition-all";
+            document.getElementById('quick-controls').classList.remove('hidden');
+            document.getElementById('planner-controls').classList.add('hidden');
+            if(banner) banner.classList.add('hidden');
+        } else {
+            planBtn.className = "px-5 py-2.5 bg-white text-purple-700 font-black rounded-lg shadow-sm text-sm transition-all";
+            quickBtn.className = "px-5 py-2.5 text-purple-600 hover:text-purple-800 hover:bg-purple-100/50 font-bold rounded-lg text-sm transition-all";
+            document.getElementById('quick-controls').classList.add('hidden');
+            document.getElementById('planner-controls').classList.remove('hidden');
+            // If we have 3 recipes generated from planner recently, show banner again
+            if(currentGeneratedRecipes.length === 3 && document.getElementById('generated-recipes-container').children.length > 0) {
+                if(banner) banner.classList.remove('hidden');
+            }
+        }
+    }
+
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `px-6 py-3 rounded-xl shadow-lg font-bold text-sm transform transition-all animate-fade-in z-[100] ${isError ? 'bg-red-500 text-white' : 'bg-gray-800 text-white'}`;
+        toast.textContent = message;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // --- DATA & SAVED LOGIC ---
+    let mySavedRecipes = JSON.parse(localStorage.getItem('littleFoodieSaved')) || [];
+    let mySavedDays = JSON.parse(localStorage.getItem('littleFoodieDays')) || []; // {id, name, type: 'inspired'|'custom', recipes: []}
+    
+    let currentGeneratedRecipes = []; 
+    let currentFilter = 'All';
+    let showFavoritesOnly = false;
+    let dailyPlannerIdeasData = null;
+    
+    // Combine Mode State
+    let isCombineMode = false;
+    let combineSelection = []; // array of absolute indices from mySavedRecipes
+
+    const blwContext = "The toddler has done Baby-Led Weaning (BLW) since 7 months old, is an experienced chomper with a strong jaw, and is highly proficient with cutlery (forks and spoons). Do NOT suggest mashing everything flat or pureeing unless appropriate for soup. Use diced/chunky textures, suggest formats that allow spearing with a fork or scooping with a spoon, and cater to advanced fine motor skills while keeping choking hazards in mind.";
+
+    window.toggleFavoritesFilter = function() {
+        showFavoritesOnly = !showFavoritesOnly;
+        const btn = document.getElementById('toggle-fav-filter');
+        const icon = btn.querySelector('.icon');
+        if(showFavoritesOnly) {
+            btn.classList.add('border-rose-400', 'text-rose-600', 'bg-rose-50');
+            btn.classList.remove('border-gray-200', 'text-gray-400', 'bg-white');
+            icon.textContent = '❤️';
+        } else {
+            btn.classList.remove('border-rose-400', 'text-rose-600', 'bg-rose-50');
+            btn.classList.add('border-gray-200', 'text-gray-400', 'bg-white');
+            icon.textContent = '🤍';
+        }
+        
+        // If we are on a "Days" filter, jumping to favorites makes sense to switch back to "All" first
+        if (currentFilter === 'InspiredDays' || currentFilter === 'MyDays') {
+            filterSaved('All');
+        } else {
+            renderSavedRecipes();
+        }
+    }
+
+    window.filterSaved = function(category) {
+        if(isCombineMode) cancelCombine(); // exit combine mode if switching filters
+        
+        currentFilter = category;
+        
+        // Reset visually
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('bg-yellow-500', 'bg-teal-500', 'bg-indigo-500', 'text-white', 'shadow-md');
+            
+            if(btn.id.includes('Inspired')) {
+                btn.classList.add('bg-white', 'text-teal-600', 'border-teal-200');
+            } else if (btn.id.includes('MyDays')) {
+                btn.classList.add('bg-white', 'text-indigo-600', 'border-indigo-200');
+            } else {
+                btn.classList.add('bg-transparent', 'text-gray-600', 'hover:bg-gray-200');
+            }
+        });
+        
+        const activeBtnId = category === 'Lunch/Dinner' ? 'filter-LunchDinner' : `filter-${category}`;
+        const activeBtn = document.getElementById(activeBtnId);
+        
+        if(category === 'InspiredDays') {
+            activeBtn.classList.remove('bg-white', 'text-teal-600');
+            activeBtn.classList.add('bg-teal-500', 'text-white', 'shadow-md');
+            document.getElementById('combine-trigger-container').classList.add('hidden');
+        } else if (category === 'MyDays') {
+            activeBtn.classList.remove('bg-white', 'text-indigo-600');
+            activeBtn.classList.add('bg-indigo-500', 'text-white', 'shadow-md');
+            document.getElementById('combine-trigger-container').classList.add('hidden');
+        } else {
+            activeBtn.classList.remove('bg-transparent', 'text-gray-600', 'hover:bg-gray-200');
+            activeBtn.classList.add('bg-yellow-500', 'text-white', 'shadow-md');
+            document.getElementById('combine-trigger-container').classList.remove('hidden');
+        }
+        
+        renderSavedRecipes();
+    }
+
+    // --- MY DAYS COMBINING LOGIC ---
+    window.toggleCombineMode = function() {
+        if(mySavedRecipes.length === 0) {
+            showToast("You need to save some recipes first!", true);
+            return;
+        }
+        isCombineMode = true;
+        combineSelection = [];
+        document.getElementById('combine-bar').classList.remove('hidden');
+        setTimeout(() => document.getElementById('combine-bar').classList.remove('translate-y-full'), 10);
+        document.getElementById('combine-trigger-container').classList.add('hidden');
+        document.getElementById('combine-count').innerText = "0";
+        document.getElementById('combine-name').value = "";
+        
+        // Force filter to 'All' so they can see everything to combine
+        if(currentFilter === 'InspiredDays' || currentFilter === 'MyDays') {
+            currentFilter = 'All';
+            const btnAll = document.getElementById('filter-All');
+            btnAll.click(); // trigger the visual update safely
+        } else {
+            renderSavedRecipes(); // re-render to show checkboxes
+        }
+    }
+
+    window.cancelCombine = function() {
+        isCombineMode = false;
+        combineSelection = [];
+        document.getElementById('combine-bar').classList.add('translate-y-full');
+        setTimeout(() => document.getElementById('combine-bar').classList.add('hidden'), 300);
+        
+        if(currentFilter !== 'InspiredDays' && currentFilter !== 'MyDays') {
+            document.getElementById('combine-trigger-container').classList.remove('hidden');
+        }
+        renderSavedRecipes();
+    }
+
+    window.toggleCombineSelection = function(absoluteIndex, checkbox) {
+        const pos = combineSelection.indexOf(absoluteIndex);
+        if (checkbox.checked && pos === -1) {
+            // Soft limit check: max ~6 recipes per day.
+            if(combineSelection.length >= 6) {
+                showToast("Maximum 6 recipes allowed per Custom Day.", true);
+                checkbox.checked = false;
+                return;
+            }
+            combineSelection.push(absoluteIndex);
+        } else if (!checkbox.checked && pos > -1) {
+            combineSelection.splice(pos, 1);
+        }
+        document.getElementById('combine-count').innerText = combineSelection.length;
+    }
+
+    window.saveCombineDay = function() {
+        if(combineSelection.length === 0) {
+            showToast("Please select at least 1 recipe.", true);
+            return;
+        }
+        
+        let dayName = document.getElementById('combine-name').value.trim();
+        if(!dayName) dayName = `My Custom Day (${new Date().toLocaleDateString()})`;
+
+        // Copy the selected recipes
+        const selectedRecipes = combineSelection.map(idx => JSON.parse(JSON.stringify(mySavedRecipes[idx])));
+
+        const newDay = {
+            id: 'day_' + Date.now(),
+            name: dayName,
+            type: 'custom',
+            recipes: selectedRecipes
+        };
+
+        mySavedDays.push(newDay);
+        localStorage.setItem('littleFoodieDays', JSON.stringify(mySavedDays));
+        
+        showToast(`"${dayName}" saved successfully! ⭐`);
+        cancelCombine();
+        
+        // Jump to My Days view
+        filterSaved('MyDays');
+    }
+
+    // --- INSPIRED DAYS SAVING ---
+    window.saveInspiredDay = function() {
+        if(currentGeneratedRecipes.length === 0) return;
+        
+        const dayName = `AI Inspired Menu (${new Date().toLocaleDateString()})`;
+        const clonedRecipes = JSON.parse(JSON.stringify(currentGeneratedRecipes));
+        
+        // Also add to master cookbook implicitly so they aren't lost if the day is deleted
+        clonedRecipes.forEach(r => {
+            r.isFavorite = false;
+            r.notes = "";
+            mySavedRecipes.push(r);
+        });
+        localStorage.setItem('littleFoodieSaved', JSON.stringify(mySavedRecipes));
+
+        const newDay = {
+            id: 'day_' + Date.now(),
+            name: dayName,
+            type: 'inspired',
+            recipes: clonedRecipes
+        };
+
+        mySavedDays.push(newDay);
+        localStorage.setItem('littleFoodieDays', JSON.stringify(mySavedDays));
+
+        // Update UI
+        const banner = document.getElementById('save-inspired-day-banner');
+        banner.innerHTML = `<h4 class="font-black text-teal-800 text-xl w-full text-center">✅ Day Saved to your Cookbook!</h4>`;
+        setTimeout(() => banner.classList.add('hidden'), 3000);
+        showToast("Inspired Day saved! ⭐");
+    }
+
+    // --- SHARED DAY/RECIPE LOGIC ---
+    window.deleteDay = function(dayId) {
+        mySavedDays = mySavedDays.filter(d => d.id !== dayId);
+        localStorage.setItem('littleFoodieDays', JSON.stringify(mySavedDays));
+        showToast("Day removed.", true);
+        renderSavedRecipes();
+    }
+
+    window.updateDayName = function(dayId, newName) {
+        const day = mySavedDays.find(d => d.id === dayId);
+        if(day && newName.trim() !== '') {
+            day.name = newName.trim();
+            localStorage.setItem('littleFoodieDays', JSON.stringify(mySavedDays));
+            showToast("Day name updated.");
+        }
+    }
+
+    window.toggleFavorite = function(index) {
+        mySavedRecipes[index].isFavorite = !mySavedRecipes[index].isFavorite;
+        localStorage.setItem('littleFoodieSaved', JSON.stringify(mySavedRecipes));
+        renderSavedRecipes(); 
+    }
+
+    window.saveNote = function(index, text) {
+        mySavedRecipes[index].notes = text;
+        localStorage.setItem('littleFoodieSaved', JSON.stringify(mySavedRecipes));
+        showToast("Note saved!");
+    }
+
+    window.deleteRecipe = function(index, btnElement) {
+        btnElement.innerHTML = "Deleted ✗";
+        btnElement.classList.remove('text-red-600', 'bg-red-50', 'hover:bg-red-100');
+        btnElement.classList.add('bg-red-600', 'text-white', 'cursor-not-allowed');
+        btnElement.disabled = true;
+        
+        const card = document.getElementById(`saved-card-${index}`);
+        if(card) {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.98)';
+        }
+
+        setTimeout(() => {
+            mySavedRecipes.splice(index, 1);
+            localStorage.setItem('littleFoodieSaved', JSON.stringify(mySavedRecipes));
+            // Edge case: if in combine mode, removing a recipe ruins the index mapping.
+            // Best to kick out of combine mode or clean it up. Safest is to just re-render.
+            if(isCombineMode) cancelCombine(); 
+            else renderSavedRecipes();
+            showToast("Recipe removed.", true);
+        }, 600);
+    }
+
+    // --- MASTER RENDER FUNCTION ---
+    function renderSavedRecipes() {
+        const container = document.getElementById('saved-recipes-container');
+        container.innerHTML = '';
+
+        // 1. RENDER DAYS ("InspiredDays" or "MyDays")
+        if (currentFilter === 'InspiredDays' || currentFilter === 'MyDays') {
+            const targetType = currentFilter === 'InspiredDays' ? 'inspired' : 'custom';
+            const daysToRender = mySavedDays.filter(d => d.type === targetType);
+            
+            if (daysToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center bg-gray-50 rounded-3xl p-10 border border-gray-200 mt-8">
+                        <p class="text-gray-500 font-bold text-lg">No saved days in this category yet.</p>
+                        <p class="text-gray-400 text-sm mt-2">${targetType === 'inspired' ? 'Generate a "Daily Inspiration" plan in the Magic Recipe Maker and save it!' : 'Click "Combine Recipes into My Day" below your filters to build one!'}</p>
+                    </div>`;
+                return;
+            }
+
+            daysToRender.forEach(day => {
+                const dayThemeColor = targetType === 'inspired' ? 'teal' : 'indigo';
+                
+                let dayHTML = `
+                <div class="bg-gray-50 rounded-3xl p-6 md:p-8 border-2 border-${dayThemeColor}-200 shadow-sm relative mb-12">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4 border-b-2 border-${dayThemeColor}-100 pb-4">
+                        <div class="flex-1 flex items-center">
+                            <span class="text-3xl mr-3">${targetType === 'inspired' ? '💡' : '📅'}</span>
+                            <input type="text" value="${day.name}" onchange="updateDayName('${day.id}', this.value)" class="text-2xl md:text-3xl font-black text-gray-800 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-${dayThemeColor}-500 focus:outline-none transition-colors px-1 py-0.5 w-full max-w-md placeholder-gray-300" placeholder="Day Name...">
+                        </div>
+                        <button onclick="deleteDay('${day.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-5 rounded-xl border border-red-200 transition-all text-sm h-fit shrink-0">
+                            🗑️ Delete Day
+                        </button>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                // Render tiny cards for recipes inside this day
+                day.recipes.forEach(recipe => {
+                    dayHTML += `
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
+                            ${recipe.image_data ? `<img src="${recipe.image_data}" class="w-full h-32 object-cover border-b border-gray-100">` : '<div class="w-full h-20 bg-gray-100 flex items-center justify-center text-xs text-gray-400">No Photo</div>'}
+                            <div class="p-4 flex flex-col flex-1">
+                                <span class="text-[10px] font-black uppercase text-${dayThemeColor}-600 tracking-wider mb-1">${recipe.mealType || 'Recipe'}</span>
+                                <h5 class="font-extrabold text-gray-800 text-sm mb-2 leading-tight">${recipe.title}</h5>
+                                <p class="text-xs text-gray-500 mb-3 flex-1 line-clamp-2">${recipe.instructions[0].replace(/<[^>]*>?/gm, '')}</p>
+                                <div class="text-[10px] font-bold text-gray-400 bg-gray-50 p-2 rounded-lg mt-auto">${recipe.total_time || ''}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                dayHTML += `</div></div>`;
+                container.innerHTML += dayHTML;
+            });
+            return;
+        }
+
+        // 2. RENDER INDIVIDUAL RECIPES (All, Breakfast, Lunch/Dinner, Snack)
+        if (mySavedRecipes.length === 0) {
+            container.innerHTML = `
+                <div class="text-center bg-yellow-50 rounded-3xl p-10 border border-yellow-200 mt-8">
+                    <p class="text-4xl mb-4">🍳</p>
+                    <p class="text-gray-600 font-bold text-lg">Your cookbook is empty!</p>
+                    <p class="text-gray-500 text-sm mt-2">Go use the Magic Recipe Maker and click "Save" to build your collection.</p>
+                </div>`;
+            return;
+        }
+
+        let filteredRecipes = [...mySavedRecipes];
+
+        if (showFavoritesOnly) {
+            filteredRecipes = filteredRecipes.filter(r => r.isFavorite === true);
+        }
+
+        let categories = {
+            "Breakfast": filteredRecipes.filter(r => r.mealType === "Breakfast"),
+            "Lunch & Dinner": filteredRecipes.filter(r => r.mealType === "Lunch/Dinner"),
+            "Snacks": filteredRecipes.filter(r => r.mealType === "Snack" || (!r.mealType)) 
+        };
+
+        if (currentFilter === 'Breakfast') { delete categories["Lunch & Dinner"]; delete categories["Snacks"]; }
+        if (currentFilter === 'Lunch/Dinner') { delete categories["Breakfast"]; delete categories["Snacks"]; }
+        if (currentFilter === 'Snack') { delete categories["Breakfast"]; delete categories["Lunch & Dinner"]; }
+
+        let hasDisplayedAny = false;
+        
+        for (const [categoryName, recipes] of Object.entries(categories)) {
+            if (recipes.length === 0) continue;
+            hasDisplayedAny = true;
+
+            // Added Recipe Count
+            container.innerHTML += `<h2 class="text-3xl font-extrabold text-gray-800 mt-10 mb-6 border-b-4 border-yellow-400 inline-block pb-2">${categoryName} <span class="text-lg font-bold text-gray-400 ml-2">(${recipes.length} recipes)</span></h2>`;
+
+            recipes.forEach((recipe) => {
+                const absoluteIndex = mySavedRecipes.indexOf(recipe);
+                const favIcon = recipe.isFavorite ? '❤️' : '🤍';
+                const favClass = recipe.isFavorite ? 'border-rose-400 bg-white text-rose-500 shadow-md' : 'border-gray-200 bg-white/80 text-gray-400 hover:bg-white hover:text-rose-400 backdrop-blur-sm';
+                
+                // Card Header Actions Logic (Combine Mode vs Normal)
+                let headerActionsHTML = '';
+                let cardStyling = 'border-2 border-yellow-300';
+
+                if (isCombineMode) {
+                    const isChecked = combineSelection.includes(absoluteIndex) ? 'checked' : '';
+                    cardStyling = isChecked ? 'border-4 border-teal-500 ring-4 ring-teal-100 scale-[1.02] z-10' : 'border-2 border-gray-200 opacity-60 hover:opacity-100 cursor-pointer';
+                    
+                    headerActionsHTML = `
+                        <div class="absolute top-4 right-4 z-20 bg-white rounded-xl p-1 shadow-md">
+                            <input type="checkbox" onchange="toggleCombineSelection(${absoluteIndex}, this)" class="combine-checkbox cursor-pointer" ${isChecked}>
+                        </div>
+                        <!-- Full card overlay label to make the whole card clickable for the checkbox -->
+                        <label class="absolute inset-0 z-10 cursor-pointer" onclick="const cb = this.previousElementSibling.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change'));"></label>
+                    `;
+                } else {
+                    headerActionsHTML = `
+                        <button onclick="toggleFavorite(${absoluteIndex})" class="absolute top-4 right-4 z-20 rounded-full w-12 h-12 flex items-center justify-center text-xl hover:scale-110 transition-transform border-2 ${favClass}" title="${recipe.isFavorite ? 'Unfavorite' : 'Favorite'}">
+                            ${favIcon}
+                        </button>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <article id="saved-card-${absoluteIndex}" class="relative bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-300 ${cardStyling}">
+                        ${headerActionsHTML}
+                        
+                        ${recipe.image_data ? `<img src="${recipe.image_data}" class="w-full h-72 object-cover border-b border-gray-200 relative z-0" alt="${recipe.title}">` : '<div class="w-full h-32 bg-gray-100 flex items-center justify-center relative z-0">No Photo</div>'}
+                        
+                        <div class="p-6 md:p-10 relative z-20">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
+                                <h3 class="text-3xl font-extrabold text-gray-900 pr-12">${recipe.title}</h3>
+                                ${!isCombineMode ? `
+                                <button onclick="deleteRecipe(${absoluteIndex}, this)" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-6 rounded-xl border border-red-200 shadow-sm transition-all whitespace-nowrap text-sm flex items-center h-fit">
+                                    🗑️ Remove
+                                </button>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="inline-flex items-center bg-yellow-50 text-yellow-700 font-bold text-sm px-4 py-2 rounded-full mb-6 border border-yellow-100">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                ${recipe.total_time || "Time not specified"}
+                            </div>
+
+                            <div class="grid md:grid-cols-3 gap-8">
+                                <div class="col-span-1 bg-yellow-50 p-6 rounded-2xl h-fit">
+                                    <h4 class="font-bold text-yellow-900 mb-4 border-b border-yellow-200 pb-2">Ingredients</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700 font-medium">
+                                        ${recipe.ingredients.map(ing => `<li>• ${ing}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div class="col-span-2">
+                                    <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
+                                    <ol class="space-y-4 text-sm text-gray-700">
+                                        ${recipe.instructions.map((inst, i) => `<li><strong class="text-yellow-600">${i + 1}.</strong> ${inst}</li>`).join('')}
+                                    </ol>
+                                    <div class="mt-6 bg-yellow-50 p-4 rounded-xl border-l-4 border-yellow-500">
+                                        <p class="text-yellow-900 text-sm"><strong class="font-black">Toddler Tip:</strong> ${recipe.toddler_tip}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes Section -->
+                            ${!isCombineMode ? `
+                            <div class="mt-8 border-t border-yellow-200 pt-6">
+                                <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                    📝 My Notes
+                                    <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-md">Auto-saves when you click away</span>
+                                </h4>
+                                <textarea id="note-${absoluteIndex}" onblur="saveNote(${absoluteIndex}, this.value)" class="w-full bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all resize-none" rows="3" placeholder="Add your notes here... e.g., 'Loved the chunky texture, next time add more cheese!'">${recipe.notes || ''}</textarea>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </article>
+                `;
+            });
+        }
+
+        if (!hasDisplayedAny) {
+            container.innerHTML = `
+                <div class="text-center bg-gray-50 rounded-3xl p-10 border border-gray-200 mt-8">
+                    <p class="text-gray-500 font-bold text-lg">No recipes found for this filter.</p>
+                </div>`;
+        }
+    }
+
+    // --- AI GENERATORS FOR TIPS & HACKS ---
+    async function generateTipsBlock(promptSuffix, containerId, btnId, errorId) {
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        const errorDiv = document.getElementById(errorId);
+        const container = document.getElementById(containerId);
+        const refreshBtn = document.getElementById(btnId);
+        
+        if (!userApiKey) {
+            errorDiv.classList.remove('hidden');
+            errorDiv.textContent = "Please paste your Gemini API Key in the 'Magic Recipe Maker' section below first!";
+            return;
+        }
+        errorDiv.classList.add('hidden');
+        
+        const originalBtnText = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...`;
+        refreshBtn.disabled = true;
+        refreshBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+        try {
+            const { textModel } = await getActiveModels(userApiKey);
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${textModel}:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: `Generate 3 NEW, short, insightful ${promptSuffix}. ${blwContext}` }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                icon: { type: "STRING", description: "A single appropriate emoji" },
+                                title: { type: "STRING" },
+                                description: { type: "STRING" }
+                            },
+                            required: ["icon", "title", "description"]
+                        }
+                    }
+                }
+            };
+            
+            const result = await fetchWithRetry(textUrl, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const tips = JSON.parse(result.candidates[0].content.parts[0].text);
+            
+            tips.forEach(tip => {
+                const tipEl = document.createElement('div');
+                tipEl.className = "bg-white p-6 rounded-2xl shadow-sm border border-gray-200 transition-all hover:shadow-md animate-fade-in";
+                tipEl.innerHTML = `
+                    <div class="text-3xl mb-4">${tip.icon}</div>
+                    <h3 class="font-bold text-lg mb-2 text-gray-800">${tip.title}</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">${tip.description}</p>
+                `;
+                container.appendChild(tipEl);
+            });
+            
+            container.parentElement.scrollTo({ top: container.parentElement.scrollHeight, behavior: 'smooth' });
+
+        } catch (e) {
+            errorDiv.classList.remove('hidden');
+            errorDiv.textContent = `Failed to load items: ${e.message}`;
+        } finally {
+            refreshBtn.innerHTML = originalBtnText;
+            refreshBtn.disabled = false;
+            refreshBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+    }
+
+    document.getElementById('btn-refresh-tips').addEventListener('click', () => {
+        generateTipsBlock("psychological facts about 20-month-old toddlers related to eating. Make sure they are different from basic tips like throwing food, appetite drops, or division of responsibility", 'psychology-container', 'btn-refresh-tips', 'psychology-error');
+    });
+
+    document.getElementById('btn-refresh-hacks').addEventListener('click', () => {
+        generateTipsBlock("BLW cooking hacks, food prep tips, or nutritional combos for toddlers. Make sure they are different from the zucchini rule, freezer secret, or iron combo", 'hacks-container', 'btn-refresh-hacks', 'hacks-error');
+    });
+
+    // --- DAILY PLANNER LOGIC ---
+
+    window.handleCheckboxChange = function(checkbox, category) {
+        const checked = document.querySelectorAll(`input[name="plan_${category}"]:checked`);
+        if (checked.length > 2) {
+            checkbox.checked = false;
+            showToast("Maximum 2 recipes per category allowed.", true);
+        }
+    }
+
+    window.rerollIdea = async function(category, index, btn) {
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        if (!userApiKey) { showToast("API Key required for rerolling!", true); return; }
+        
+        btn.classList.add('animate-spin');
+        btn.disabled = true;
+        
+        const ingredients = getIngredients();
+        const currentItem = dailyPlannerIdeasData[category][index].name;
+        const otherItems = dailyPlannerIdeasData[category].map(i => i.name).filter(n => n !== currentItem);
+        let catText = category === 'breakfasts' ? 'Breakfast' : (category === 'lunches' ? 'Lunch/Dinner' : 'Snack');
+
+        try {
+            const { textModel } = await getActiveModels(userApiKey);
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${textModel}:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: `Generate exactly 1 NEW ${catText} meal idea using: ${ingredients}. Do NOT suggest these: ${currentItem}, ${otherItems.join(', ')}. ${blwContext}` }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: { name: {type: "STRING"}, desc: {type: "STRING"} },
+                        required: ["name", "desc"]
+                    }
+                }
+            };
+
+            const result = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const newIdea = JSON.parse(result.candidates[0].content.parts[0].text);
+            
+            // Update data array
+            dailyPlannerIdeasData[category][index] = newIdea;
+            // Re-render only that category
+            const container = document.getElementById(`ideas-${category}`);
+            container.innerHTML = '';
+            renderOptions(dailyPlannerIdeasData[category], container, category);
+
+        } catch (error) {
+            showToast("Failed to reroll. Try again.", true);
+        }
+    }
+
+    const renderOptions = (arr, container, category) => {
+        arr.forEach((item, i) => {
+            container.innerHTML += `
+                <div class="flex items-start gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                    <label class="flex items-start gap-3 cursor-pointer flex-1">
+                        <input type="checkbox" name="plan_${category}" value="${item.name}" onchange="handleCheckboxChange(this, '${category}')" class="mt-1 shrink-0" ${i === 0 ? 'checked' : ''}>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">${item.name}</p>
+                            <p class="text-gray-500 text-xs mt-1 leading-snug pr-2">${item.desc}</p>
+                        </div>
+                    </label>
+                    <button onclick="rerollIdea('${category}', ${i}, this)" class="text-purple-500 hover:text-purple-700 p-2 bg-purple-50 hover:bg-purple-100 rounded-lg transition-all" title="Generate different idea">
+                        ↻
+                    </button>
+                </div>
+            `;
+        });
+    };
+
+    document.getElementById('btn-get-ideas').addEventListener('click', async () => {
+        const ingredients = getIngredients();
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        const formError = document.getElementById('form-error');
+        formError.classList.add('hidden');
+
+        if (!userApiKey) {
+            formError.textContent = "Error: Please paste your Gemini API Key!";
+            formError.classList.remove('hidden');
+            return;
+        }
+
+        const globalLoading = document.getElementById('ai-global-loading');
+        const loadingStatusText = document.getElementById('ai-loading-status');
+        const btn = document.getElementById('btn-get-ideas');
+        
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        globalLoading.classList.remove('hidden');
+        loadingStatusText.textContent = "Drafting menu options for the day...";
+        
+        try {
+            const { textModel } = await getActiveModels(userApiKey);
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${textModel}:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: `Create meal ideas using these ingredients: ${ingredients}. Give 3 Breakfasts, 3 Lunches/Dinners, and 3 Snacks. Keep them safe for a 20-month old. ${blwContext}` }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            breakfasts: { type: "ARRAY", items: { type: "OBJECT", properties: { name: {type: "STRING"}, desc: {type: "STRING"} }, required: ["name", "desc"] } },
+                            lunches: { type: "ARRAY", items: { type: "OBJECT", properties: { name: {type: "STRING"}, desc: {type: "STRING"} }, required: ["name", "desc"] } },
+                            snacks: { type: "ARRAY", items: { type: "OBJECT", properties: { name: {type: "STRING"}, desc: {type: "STRING"} }, required: ["name", "desc"] } }
+                        }
+                    }
+                }
+            };
+
+            const result = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            dailyPlannerIdeasData = JSON.parse(result.candidates[0].content.parts[0].text);
+
+            const bfastContainer = document.getElementById('ideas-breakfasts'); bfastContainer.innerHTML = '';
+            const lunchContainer = document.getElementById('ideas-lunches'); lunchContainer.innerHTML = '';
+            const snackContainer = document.getElementById('ideas-snacks'); snackContainer.innerHTML = '';
+
+            renderOptions(dailyPlannerIdeasData.breakfasts, bfastContainer, 'breakfasts');
+            renderOptions(dailyPlannerIdeasData.lunches, lunchContainer, 'lunches');
+            renderOptions(dailyPlannerIdeasData.snacks, snackContainer, 'snacks');
+
+            globalLoading.classList.add('hidden');
+            document.getElementById('planner-ideas-area').classList.remove('hidden');
+
+        } catch (error) {
+            console.error("Planner Generation Error:", error);
+            globalLoading.classList.add('hidden');
+            const globalError = document.getElementById('ai-global-error');
+            globalError.classList.remove('hidden');
+            document.getElementById('ai-error-text').textContent = error.message;
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    document.getElementById('btn-generate-plan').addEventListener('click', async () => {
+        const ingredients = getIngredients();
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        
+        // Collect selections
+        const selectedMeals = [];
+        ['breakfasts', 'lunches', 'snacks'].forEach(cat => {
+            const checked = document.querySelectorAll(`input[name="plan_${cat}"]:checked`);
+            checked.forEach(el => selectedMeals.push(`- ${el.value} (${cat === 'lunches' ? 'Lunch/Dinner' : cat.replace('s','')})`));
+        });
+
+        if(selectedMeals.length === 0) {
+            showToast("Please select at least one meal to generate!", true);
+            return;
+        }
+
+        const planBtn = document.getElementById('btn-generate-plan');
+        const originalText = planBtn.innerHTML;
+        planBtn.innerHTML = 'Locking in Recipes! 🔒 <svg class="animate-spin ml-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        planBtn.classList.add('bg-teal-700', 'scale-95');
+
+        await executeAIGeneration(userApiKey, ingredients, `Generate full recipes for exactly these chosen meals:\n${selectedMeals.join('\n')}\nInclude estimated total_time. Provide extremely thorough instructions. ${blwContext}`, true);
+
+        planBtn.innerHTML = originalText;
+        planBtn.classList.remove('bg-teal-700', 'scale-95');
+    });
+
+    // --- QUICK MODE GENERATION ---
+    document.getElementById('btn-generate-quick').addEventListener('click', async () => {
+        const ingredients = getIngredients();
+        const mealType = document.getElementById('ai-meal-type').value;
+        const recipeCount = document.getElementById('ai-recipe-count').value;
+        const userApiKey = document.getElementById('user-api-key').value.trim();
+        
+        const formError = document.getElementById('form-error');
+        formError.classList.add('hidden');
+
+        if (!userApiKey) {
+            formError.textContent = "Error: Please paste your Gemini API Key!";
+            formError.classList.remove('hidden');
+            return;
+        }
+        
+        executeAIGeneration(userApiKey, ingredients, `Create exactly ${recipeCount} distinct, widely varied, and expansively detailed ${mealType} recipes using: ${ingredients}. Include estimated total_time. Provide extremely thorough, step-by-step instructions. ${blwContext}`, false);
+    });
+
+    // --- CORE GENERATION ENGINE ---
+    async function executeAIGeneration(apiKey, ingredients, promptText, isPlannerMode) {
+        const recipesContainer = document.getElementById('generated-recipes-container');
+        const globalLoading = document.getElementById('ai-global-loading');
+        const loadingStatusText = document.getElementById('ai-loading-status');
+        const globalError = document.getElementById('ai-global-error');
+        const saveInspiredBanner = document.getElementById('save-inspired-day-banner');
+        
+        recipesContainer.innerHTML = '';
+        recipesContainer.classList.add('hidden');
+        globalError.classList.add('hidden');
+        saveInspiredBanner.classList.add('hidden');
+        globalLoading.classList.remove('hidden');
+        loadingStatusText.textContent = "Writing your recipes...";
+        
+        currentGeneratedRecipes = []; 
+
+        try {
+            const { textModel, imageModel } = await getActiveModels(apiKey);
+
+            const textUrl = `https://generativelanguage.googleapis.com/v1beta/${textModel}:generateContent?key=${apiKey}`;
+            const textPayload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: "You are a toddler nutritionist and master chef. Create safe, highly detailed, step-by-step recipes." }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            recipes: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        title: { type: "STRING" },
+                                        total_time: { type: "STRING", description: "Estimated prep and cook time, e.g., 'Prep: 10m | Cook: 15m'" },
+                                        mealType: { type: "STRING", description: "Must be exactly 'Breakfast', 'Lunch/Dinner', or 'Snack'" },
+                                        ingredients: { type: "ARRAY", items: { type: "STRING" } },
+                                        instructions: { type: "ARRAY", items: { type: "STRING" } },
+                                        toddler_tip: { type: "STRING" },
+                                        image_prompt: { type: "STRING", description: "Prompt for beautiful, realistic food photography of this dish plated specifically for a toddler." }
+                                    },
+                                    required: ["title", "total_time", "mealType", "ingredients", "instructions", "toddler_tip", "image_prompt"]
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            const textResult = await fetchWithRetry(textUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(textPayload) });
+            const generatedData = JSON.parse(textResult.candidates[0].content.parts[0].text);
+            currentGeneratedRecipes = generatedData.recipes;
+
+            globalLoading.classList.add('hidden');
+            
+            if (isPlannerMode) {
+                saveInspiredBanner.classList.remove('hidden');
+                saveInspiredBanner.classList.add('flex');
+            }
+            
+            recipesContainer.classList.remove('hidden');
+            recipesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Build Skeleton HTML
+            currentGeneratedRecipes.forEach((recipe, index) => {
+                const article = document.createElement('article');
+                article.id = `gen-recipe-card-${index}`;
+                article.className = "bg-white rounded-3xl shadow-lg border-2 border-purple-300 overflow-hidden relative";
+                
+                article.innerHTML = `
+                    <div class="absolute top-4 left-4 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
+                        AI Generated
+                    </div>
+                    <div class="relative w-full h-72 bg-gray-100 flex flex-col items-center justify-center border-b border-purple-100">
+                        <img id="gen-img-${index}" class="w-full h-full object-cover hidden relative z-0" alt="Generated Recipe Image" />
+                        <div id="gen-loading-${index}" class="flex flex-col items-center p-6 text-center z-10">
+                            <svg class="animate-spin h-10 w-10 text-purple-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <p class="text-purple-700 font-bold text-sm animate-pulse">Plating dish ${index + 1} of ${currentGeneratedRecipes.length}...</p>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-10">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
+                            <h3 class="text-3xl font-extrabold text-gray-900">${recipe.title}</h3>
+                            <button onclick="saveRecipe(${index})" id="save-btn-${index}" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-xl shadow-md transition-all whitespace-nowrap text-sm flex items-center h-fit">
+                                ⭐ Save Recipe
+                            </button>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="inline-flex items-center bg-purple-50 text-purple-700 font-bold text-xs px-3 py-1.5 rounded-full border border-purple-100">
+                                ${recipe.mealType || "Recipe"}
+                            </span>
+                            <span class="inline-flex items-center bg-gray-50 text-gray-700 font-bold text-xs px-3 py-1.5 rounded-full border border-gray-200">
+                                ⏱️ ${recipe.total_time || "Time not specified"}
+                            </span>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="col-span-1 bg-purple-50 p-6 rounded-2xl h-fit">
+                                <h4 class="font-bold text-purple-900 mb-4 border-b border-purple-200 pb-2">Ingredients</h4>
+                                <ul class="space-y-2 text-sm text-gray-700 font-medium">
+                                    ${recipe.ingredients.map(ing => `<li>• ${ing}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="col-span-2">
+                                <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">Instructions</h4>
+                                <ol class="space-y-4 text-sm text-gray-700">
+                                    ${recipe.instructions.map((inst, i) => `<li><strong class="text-purple-600">${i + 1}.</strong> ${inst}</li>`).join('')}
+                                </ol>
+                                <div class="mt-6 bg-purple-50 p-4 rounded-xl border-l-4 border-purple-500">
+                                    <p class="text-purple-900 text-sm"><strong class="font-black">Toddler Tip:</strong> ${recipe.toddler_tip}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                recipesContainer.appendChild(article);
+            });
+
+            // Fetch Images sequentially
+            for (let i = 0; i < currentGeneratedRecipes.length; i++) {
+                const recipe = currentGeneratedRecipes[i];
+                const imgUrl = `https://generativelanguage.googleapis.com/v1beta/${imageModel}:predict?key=${apiKey}`;
+                const imgPayload = { instances: { prompt: recipe.image_prompt }, parameters: { sampleCount: 1 } };
+                
+                try {
+                    const imgResult = await fetchWithRetry(imgUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imgPayload) });
+                    if (imgResult.predictions && imgResult.predictions[0]) {
+                        const base64Data = `data:image/png;base64,${imgResult.predictions[0].bytesBase64Encoded}`;
+                        recipe.image_data = base64Data; 
+                        
+                        document.getElementById(`gen-loading-${i}`).classList.add('hidden');
+                        document.getElementById(`gen-loading-${i}`).classList.remove('flex');
+                        const imgTag = document.getElementById(`gen-img-${i}`);
+                        imgTag.src = base64Data;
+                        imgTag.classList.remove('hidden');
+                    }
+                } catch (imgError) {
+                    document.getElementById(`gen-loading-${i}`).innerHTML = `<p class="text-red-500 font-bold text-xs p-4">Image failed: ${imgError.message}</p>`;
+                }
+            }
+
+        } catch (error) {
+            console.error("Generation Error:", error);
+            globalLoading.classList.add('hidden');
+            recipesContainer.classList.add('hidden');
+            globalError.classList.remove('hidden');
+            document.getElementById('ai-error-text').textContent = error.message;
+        }
+    }
+
 </script>
 </body>
 </html>
